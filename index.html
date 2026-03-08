@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reminiscing — A Yacht Rock Tribute</title>
+  <style>
+    /* ── Fonts ── */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #F5A623;
+      --gold-light: #FFD166;
+      --navy:       #0C1A2E;
+      --navy-mid:   #112240;
+      --ocean:      #0E8C8C;
+      --teal:       #15B8B8;
+      --sunset:     #F0621F;
+      --sunset-hot: #FF8C42;
+      --cream:      #FDF6E3;
+      --tan:        #C9B07A;
+      --white:      #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--navy);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 3rem;
+      background: linear-gradient(to bottom, rgba(13,27,42,0.95) 0%, transparent 100%);
+      backdrop-filter: blur(4px);
+      transition: background 0.3s;
+    }
+    nav.scrolled { background: rgba(13,27,42,0.97); }
+
+    .nav-logo img {
+      height: 54px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 2px 8px rgba(240,98,31,0.4));
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cream);
+      opacity: 0.85;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--gold-light); }
+
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+    .nav-toggle span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--cream);
+      margin: 5px 0;
+      transition: 0.3s;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 110%, rgba(240,98,31,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 60%, rgba(21,184,184,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 30%, rgba(245,166,35,0.2) 0%, transparent 40%),
+        linear-gradient(170deg, #0C1A2E 0%, #112240 40%, #0A1E30 100%);
+    }
+
+    /* Animated waves */
+    .waves {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 180px;
+      overflow: hidden;
+    }
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%230D1B2A' fill-opacity='1' d='M0,64L60,58.7C120,53,240,43,360,48C480,53,600,75,720,80C840,85,960,75,1080,64C1200,53,1320,43,1380,37.3L1440,32L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z'/%3E%3C/svg%3E") repeat-x bottom;
+      background-size: 1440px 120px;
+      animation: wave-anim 12s linear infinite;
+    }
+    .wave:nth-child(2) {
+      opacity: 0.5;
+      animation-duration: 18s;
+      animation-direction: reverse;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%231A3050' fill-opacity='1' d='M0,96L80,85.3C160,75,320,53,480,53.3C640,53,800,75,960,80C1120,85,1280,75,1360,69.3L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z'/%3E%3C/svg%3E");
+    }
+    @keyframes wave-anim {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Sun glow */
+    .sun {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px; height: 80px;
+      background: radial-gradient(ellipse at 50% 100%, #F5D07A 0%, rgba(232,118,58,0.6) 50%, transparent 80%);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      filter: blur(8px);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 2rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-style: italic;
+      color: var(--white);
+      line-height: 1;
+      text-shadow: 0 2px 30px rgba(212,168,67,0.4);
+      margin-bottom: 0.3rem;
+    }
+    .hero-title span { color: var(--gold-light); }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--tan);
+      letter-spacing: 0.05em;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 2px solid;
+    }
+    .btn-primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: var(--gold-light); border-color: var(--gold-light); transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent;
+      border-color: rgba(249,243,232,0.5);
+      color: var(--cream);
+    }
+    .btn-outline:hover { border-color: var(--cream); background: rgba(249,243,232,0.08); transform: translateY(-2px); }
+
+    /* ── Section Commons ── */
+    section { padding: 6rem 2rem; }
+
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(to right, var(--gold), var(--sunset));
+      margin: 1.5rem 0 2.5rem;
+    }
+
+    /* ── About ── */
+    #about { background: var(--navy); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: rgba(249,243,232,0.8);
+      margin-bottom: 1.2rem;
+    }
+
+    .about-image {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .about-image-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, var(--navy-mid) 0%, #0D2B45 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      border: 1px solid rgba(212,168,67,0.25);
+      border-radius: 4px;
+    }
+    .about-image-placeholder svg { opacity: 0.3; }
+    .about-image-placeholder p { font-style: italic; color: var(--tan); font-size: 0.9rem; }
+
+    .band-members {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    .member-chip {
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      color: var(--tan);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Media ── */
+    #media {
+      background: linear-gradient(160deg, #0D2540 0%, #0D1B2A 100%);
+    }
+
+    .media-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(212,168,67,0.2);
+    }
+    .media-tab {
+      padding: 0.75rem 1.75rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: rgba(249,243,232,0.5);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+    .media-tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+    .media-tab:hover:not(.active) { color: var(--cream); }
+
+    .media-panel { display: none; }
+    .media-panel.active { display: block; }
+
+    /* Photo grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .photo-item {
+      aspect-ratio: 4/3;
+      background: var(--navy-mid);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .photo-item:hover { transform: scale(1.02); border-color: rgba(212,168,67,0.4); }
+    .photo-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: linear-gradient(135deg, #1A3050 0%, #0D2540 100%);
+    }
+    .photo-placeholder svg { opacity: 0.25; }
+    .photo-placeholder span { font-size: 0.8rem; color: var(--tan); font-style: italic; }
+
+    /* Video grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+    .video-item {
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: border-color 0.2s;
+    }
+    .video-item:hover { border-color: rgba(212,168,67,0.4); }
+    .video-thumb {
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1A3050 0%, #0D2540 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+    }
+    .play-btn {
+      width: 64px; height: 64px;
+      background: rgba(212,168,67,0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .play-btn:hover { background: var(--gold); transform: scale(1.1); }
+    .video-label {
+      padding: 0.75rem 1rem;
+      background: var(--navy-mid);
+      font-size: 0.9rem;
+      color: var(--cream);
+    }
+    .video-label small { color: var(--tan); font-size: 0.78rem; }
+
+    /* Music / audio */
+    .tracks-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .track {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .track:hover, .track.playing { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.35); }
+    .track-num {
+      width: 28px; text-align: center;
+      font-size: 0.85rem;
+      color: var(--tan);
+      flex-shrink: 0;
+    }
+    .track.playing .track-num { display: none; }
+    .track-play-icon { display: none; }
+    .track.playing .track-play-icon { display: block; color: var(--gold); }
+
+    .track-info { flex: 1; }
+    .track-name { font-size: 0.95rem; color: var(--cream); }
+    .track-meta { font-size: 0.78rem; color: var(--tan); margin-top: 0.15rem; }
+    .track-duration { font-size: 0.85rem; color: var(--tan); }
+
+    .player-bar {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(212,168,67,0.2);
+      border-radius: 4px;
+      display: none;
+    }
+    .player-bar.visible { display: block; }
+    .player-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+    .player-title { font-size: 0.95rem; flex: 1; }
+    .player-controls { display: flex; gap: 0.5rem; align-items: center; }
+    .ctrl-btn {
+      width: 36px; height: 36px;
+      background: none;
+      border: 1px solid rgba(212,168,67,0.3);
+      border-radius: 50%;
+      color: var(--cream);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .ctrl-btn:hover { border-color: var(--gold); background: rgba(212,168,67,0.1); }
+    .ctrl-btn.lg { width: 44px; height: 44px; background: var(--gold); border-color: var(--gold); color: var(--navy); }
+    .ctrl-btn.lg:hover { background: var(--gold-light); }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 30%;
+      background: linear-gradient(to right, var(--teal), var(--sunset));
+      border-radius: 2px;
+      transition: width 0.5s;
+    }
+
+    /* ── Gig Calendar ── */
+    #calendar {
+      background: var(--navy);
+    }
+
+    .gigs-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .gig-list { display: flex; flex-direction: column; gap: 1px; }
+
+    .gig {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: rgba(255,255,255,0.03);
+      border-left: 3px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .gig:hover { background: rgba(212,168,67,0.06); border-left-color: var(--gold); }
+    .gig + .gig { border-top: 1px solid rgba(255,255,255,0.05); }
+
+    .gig-date {
+      text-align: center;
+    }
+    .gig-day { font-size: 2rem; font-family: 'Playfair Display', serif; color: var(--gold); line-height: 1; }
+    .gig-month { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--tan); margin-top: 0.1rem; }
+
+    .gig-info {}
+    .gig-venue { font-size: 1.05rem; font-weight: 700; color: var(--cream); }
+    .gig-location { font-size: 0.85rem; color: var(--tan); margin-top: 0.25rem; }
+    .gig-time { font-size: 0.8rem; color: rgba(249,243,232,0.5); margin-top: 0.2rem; }
+    .gig-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .gig-tag {
+      padding: 0.15rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      background: rgba(27,108,168,0.25);
+      color: #7BC4E8;
+      border: 1px solid rgba(27,108,168,0.4);
+    }
+    .gig-tag.vip { background: rgba(212,168,67,0.15); color: var(--gold); border-color: rgba(212,168,67,0.3); }
+
+    .gig-action {}
+    .btn-ticket {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid rgba(212,168,67,0.4);
+      border-radius: 2px;
+      color: var(--gold);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-ticket:hover { background: rgba(212,168,67,0.12); border-color: var(--gold); }
+
+    .gig-sold-out { font-size: 0.8rem; color: var(--sunset); letter-spacing: 0.1em; }
+
+    /* ── Booking ── */
+    #booking {
+      background: linear-gradient(160deg, #0D2540 0%, #0D1B2A 100%);
+    }
+
+    .booking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .booking-info p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(249,243,232,0.75);
+      margin-bottom: 1.2rem;
+    }
+
+    .booking-facts { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+    .booking-fact {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      border-left: 2px solid var(--gold);
+    }
+    .booking-fact-icon { color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+    .booking-fact-title { font-size: 0.9rem; font-weight: 700; color: var(--cream); }
+    .booking-fact-text { font-size: 0.82rem; color: var(--tan); margin-top: 0.15rem; }
+
+    /* Form */
+    .booking-form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tan);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(212,168,67,0.2);
+      border-radius: 2px;
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+    .form-group select option { background: var(--navy-mid); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+
+    .form-note { font-size: 0.78rem; color: rgba(249,243,232,0.4); text-align: center; }
+
+    .form-success {
+      display: none;
+      padding: 2rem;
+      text-align: center;
+      background: rgba(212,168,67,0.08);
+      border: 1px solid rgba(212,168,67,0.3);
+      border-radius: 4px;
+    }
+    .form-success svg { color: var(--gold); margin-bottom: 1rem; }
+    .form-success h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .form-success p { color: var(--tan); font-size: 0.9rem; }
+
+    /* ── Footer ── */
+    footer {
+      background: #080F18;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .footer-inner { max-width: 600px; margin: 0 auto; }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .footer-tagline { font-size: 0.85rem; color: var(--tan); margin-bottom: 1.5rem; }
+    .footer-social { display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 2rem; }
+    .social-link {
+      width: 40px; height: 40px;
+      border: 1px solid rgba(212,168,67,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tan);
+      transition: all 0.2s;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); }
+    .footer-copy { font-size: 0.78rem; color: rgba(249,243,232,0.3); }
+    .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.8rem; color: rgba(249,243,232,0.5); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(8,15,24,0.95);
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      background: var(--navy-mid);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(212,168,67,0.2);
+    }
+    .lightbox-body {
+      width: 70vw;
+      max-width: 900px;
+      aspect-ratio: 4/3;
+      background: #0D2540;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tan);
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 0.75rem; right: 0.75rem;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: var(--cream);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(232,118,58,0.7); }
+
+    /* ── Scroll indicator ── */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      z-index: 2;
+      animation: float 2.5s ease-in-out infinite;
+    }
+    .scroll-indicator span { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(249,243,232,0.5); }
+    .scroll-mouse {
+      width: 22px; height: 34px;
+      border: 1px solid rgba(249,243,232,0.3);
+      border-radius: 11px;
+      position: relative;
+    }
+    .scroll-mouse::after {
+      content: '';
+      position: absolute;
+      top: 5px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 6px;
+      background: rgba(249,243,232,0.5);
+      border-radius: 2px;
+      animation: scroll-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-8px); } }
+    @keyframes scroll-dot { 0%,100% { top: 5px; opacity: 1; } 80% { top: 16px; opacity: 0; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); padding: 1rem 2rem; gap: 1.25rem; }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
+
+      .about-grid { grid-template-columns: 1fr; }
+      .booking-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+
+      .gig { grid-template-columns: 70px 1fr; gap: 1rem; }
+      .gig-action { grid-column: 2; }
+
+      section { padding: 4rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav id="nav">
+  <div class="nav-logo">
+    <a href="#hero"><img src="logo.png" alt="Reminiscing — A Yacht Rock Tribute" /></a>
+  </div>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#media">Media</a></li>
+    <li><a href="#calendar">Shows</a></li>
+    <li><a href="#booking">Book Us</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="sun"></div>
+  <div class="hero-content">
+    <img src="logo.png" alt="Reminiscing — A Yacht Rock Tribute" style="height:clamp(180px,30vw,320px);width:auto;filter:drop-shadow(0 4px 32px rgba(240,98,31,0.5));margin-bottom:1.5rem;" />
+    <p class="hero-subtitle">Sailing the smooth seas of sound</p>
+    <div class="hero-cta-group">
+      <a href="#calendar" class="btn btn-primary">See Upcoming Shows</a>
+      <a href="#booking" class="btn btn-outline">Book the Band</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"></div>
+    <span>Scroll</span>
+  </div>
+  <div class="waves">
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">The Band</p>
+        <h2 class="section-title">Bringing the Sunset Strip to Your Shore</h2>
+        <div class="divider"></div>
+        <p>
+          Reminiscing is a six-piece tribute band devoted to the golden era of yacht rock —
+          those impossibly silky grooves that drifted from Malibu to Marina del Rey between 1976 and 1984.
+        </p>
+        <p>
+          We faithfully recreate the lush arrangements, impeccable studio craft, and breezy charisma
+          of legends like Christopher Cross, Hall &amp; Oates, Little River Band, America, and more. Close your eyes, feel the salt air, and let the music take you out to sea.
+        </p>
+        <p>
+          From intimate supper clubs to sold-out festival stages, we bring authentic sound,
+          period-correct wardrobe, and an infectious love for the music.
+        </p>
+        <div class="band-members">
+          <span class="member-chip">&#127908; David Vece — Vocals / Sax / Guitar</span>
+          <span class="member-chip">&#127928; Jay Barnett — Lead Guitar</span>
+          <span class="member-chip">&#127932; Doug Smith — Bass</span>
+          <span class="member-chip">&#129345; Tom Ward — Drums / Perc.</span>
+          <span class="member-chip">&#127929; Steve Johnson — Keys</span>
+          <span class="member-chip">&#127908; Vicki Waves — Backing Vocals</span>
+        </div>
+      </div>
+      <div class="about-image">
+        <div class="about-image-placeholder">
+          <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="80" height="60" rx="4" fill="#1A3050"/>
+            <circle cx="28" cy="22" r="8" stroke="#D4A843" stroke-width="1.5"/>
+            <path d="M4 52 L18 36 L28 46 L40 30 L54 42 L76 20" stroke="#D4A843" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>Band photo coming soon</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MEDIA ══════════ -->
+<section id="media">
+  <div class="section-inner">
+    <p class="section-label">Media</p>
+    <h2 class="section-title">Photos, Videos &amp; Music</h2>
+    <div class="divider"></div>
+
+    <div class="media-tabs">
+      <button class="media-tab active" data-tab="photos">Photos</button>
+      <button class="media-tab" data-tab="videos">Videos</button>
+      <button class="media-tab" data-tab="music">Music</button>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="media-panel active" id="tab-photos">
+      <div class="photo-grid">
+        <!-- Replace src with real images; placeholders shown below -->
+        <div class="photo-item" onclick="openLightbox('Photo: Live at the Bayside Amphitheater, 2024')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Live @ Bayside Amphitheater</span>
+          </div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('Photo: Studio Session, 2023')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Studio Session 2023</span>
+          </div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('Photo: Harbor Festival Main Stage')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Harbor Festival Main Stage</span>
+          </div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('Photo: Private Charter — S/V Lady Jane')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Private Charter — S/V Lady Jane</span>
+          </div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('Photo: Soundcheck Blues')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Soundcheck Blues</span>
+          </div>
+        </div>
+        <div class="photo-item" onclick="openLightbox('Photo: Rooftop Sessions 2024')">
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Rooftop Sessions 2024</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="media-panel" id="tab-videos">
+      <div class="video-grid">
+        <div class="video-item">
+          <div class="video-thumb" onclick="openLightbox('Video: Sailing (Christopher Cross cover) — Live')">
+            <div class="play-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+          </div>
+          <div class="video-label">
+            <div>Sailing (Christopher Cross) — Live</div>
+            <small>Harbor Jazz Festival &bull; June 2024</small>
+          </div>
+        </div>
+        <div class="video-item">
+          <div class="video-thumb" onclick="openLightbox('Video: What a Fool Believes (Doobie Bros) — Live')">
+            <div class="play-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+          </div>
+          <div class="video-label">
+            <div>What a Fool Believes — Live</div>
+            <small>Bayside Amphitheater &bull; Aug 2024</small>
+          </div>
+        </div>
+        <div class="video-item">
+          <div class="video-thumb" onclick="openLightbox('Video: Reelin In The Years (Steely Dan) — Acoustic')">
+            <div class="play-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+          </div>
+          <div class="video-label">
+            <div>Reelin' In the Years — Acoustic Set</div>
+            <small>Rooftop Sessions &bull; Mar 2024</small>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--tan);">
+        &#9654; Subscribe on <a href="#" style="color:var(--gold);">YouTube</a> for full show recordings.
+      </p>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="media-panel" id="tab-music">
+      <div class="tracks-list" id="tracks-list">
+        <div class="track" data-index="0" onclick="playTrack(this,0)">
+          <span class="track-num">1</span>
+          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="track-info">
+            <div class="track-name">Ride Like the Wind</div>
+            <div class="track-meta">Christopher Cross &bull; Live Recording</div>
+          </div>
+          <span class="track-duration">4:12</span>
+        </div>
+        <div class="track" data-index="1" onclick="playTrack(this,1)">
+          <span class="track-num">2</span>
+          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="track-info">
+            <div class="track-name">Peg</div>
+            <div class="track-meta">Steely Dan &bull; Studio Demo</div>
+          </div>
+          <span class="track-duration">3:54</span>
+        </div>
+        <div class="track" data-index="2" onclick="playTrack(this,2)">
+          <span class="track-num">3</span>
+          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="track-info">
+            <div class="track-name">Footloose</div>
+            <div class="track-meta">Kenny Loggins &bull; Live Recording</div>
+          </div>
+          <span class="track-duration">3:47</span>
+        </div>
+        <div class="track" data-index="3" onclick="playTrack(this,3)">
+          <span class="track-num">4</span>
+          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="track-info">
+            <div class="track-name">Sara Smile</div>
+            <div class="track-meta">Hall &amp; Oates &bull; Live Recording</div>
+          </div>
+          <span class="track-duration">4:05</span>
+        </div>
+        <div class="track" data-index="4" onclick="playTrack(this,4)">
+          <span class="track-num">5</span>
+          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="track-info">
+            <div class="track-name">Steal Away</div>
+            <div class="track-meta">Robbie Dupree &bull; Studio Demo</div>
+          </div>
+          <span class="track-duration">4:33</span>
+        </div>
+      </div>
+
+      <!-- Simulated player UI -->
+      <div class="player-bar" id="player-bar">
+        <div class="player-top">
+          <div class="player-title" id="player-title">—</div>
+          <div class="player-controls">
+            <button class="ctrl-btn" onclick="prevTrack()" title="Previous">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="ctrl-btn lg" id="play-pause-btn" onclick="togglePlay()">
+              <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <svg id="pause-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </button>
+            <button class="ctrl-btn" onclick="nextTrack()" title="Next">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="progress-bar" onclick="seekTrack(event)">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--tan);margin-top:0.5rem;font-style:italic;">
+          Demo player — connect your audio files or streaming links to enable playback.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CALENDAR ══════════ -->
+<section id="calendar">
+  <div class="section-inner">
+    <div class="gigs-header">
+      <div>
+        <p class="section-label">Shows</p>
+        <h2 class="section-title">Upcoming Gigs</h2>
+        <div class="divider" style="margin-bottom:0;"></div>
+      </div>
+      <div>
+        <select id="gig-filter" onchange="filterGigs()" style="padding:0.5rem 1rem;background:rgba(255,255,255,0.05);border:1px solid rgba(212,168,67,0.25);border-radius:2px;color:var(--cream);font-size:0.85rem;cursor:pointer;">
+          <option value="all">All Shows</option>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+          <option value="festival">Festival</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="gig-list" id="gig-list">
+      <!-- Populated by JS -->
+    </div>
+
+    <p style="text-align:center;margin-top:2rem;font-size:0.85rem;color:var(--tan);">
+      Don't see your city? <a href="#booking" style="color:var(--gold);">Request a booking.</a>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ BOOKING ══════════ -->
+<section id="booking">
+  <div class="section-inner">
+    <p class="section-label">Bookings</p>
+    <h2 class="section-title">Bring Smooth Horizon to Your Event</h2>
+    <div class="divider"></div>
+
+    <div class="booking-grid">
+      <div class="booking-info">
+        <p>
+          Whether it's a yacht party, corporate gala, winery concert, or private celebration —
+          Reminiscing delivers a full-production, authentic yacht rock experience that
+          your guests will talk about for years.
+        </p>
+        <p>
+          We travel nationally and internationally. Our team handles sound, lighting requirements,
+          and setlist customization so your event runs without a hitch.
+        </p>
+
+        <div class="booking-facts">
+          <div class="booking-fact">
+            <div class="booking-fact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="booking-fact-title">Set Lengths</div>
+              <div class="booking-fact-text">45 min, 90 min, or 2 &times; 50-min sets with break</div>
+            </div>
+          </div>
+          <div class="booking-fact">
+            <div class="booking-fact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div>
+              <div class="booking-fact-title">Capacity</div>
+              <div class="booking-fact-text">Intimate dinners of 50 to festival crowds of 10,000+</div>
+            </div>
+          </div>
+          <div class="booking-fact">
+            <div class="booking-fact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div>
+              <div class="booking-fact-title">Full Production Available</div>
+              <div class="booking-fact-text">PA system, stage lighting, and backline on request</div>
+            </div>
+          </div>
+          <div class="booking-fact">
+            <div class="booking-fact-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l.91-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="booking-fact-title">Contact</div>
+              <div class="booking-fact-text">booking@reminiscingband.com &bull; (555) 867-5309</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <form class="booking-form" id="booking-form" onsubmit="submitBooking(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Your Name</label>
+              <input type="text" id="f-name" placeholder="Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email Address</label>
+              <input type="email" id="f-email" placeholder="jane@example.com" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-phone">Phone Number</label>
+              <input type="tel" id="f-phone" placeholder="(555) 000-0000" />
+            </div>
+            <div class="form-group">
+              <label for="f-date">Event Date</label>
+              <input type="date" id="f-date" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-type">Event Type</label>
+            <select id="f-type" required>
+              <option value="">— Select —</option>
+              <option>Corporate / Private Party</option>
+              <option>Wedding Reception</option>
+              <option>Festival / Public Concert</option>
+              <option>Yacht / Boat Charter</option>
+              <option>Winery / Vineyard Event</option>
+              <option>Charity / Benefit Concert</option>
+              <option>Club / Venue Night</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-venue">Venue / Location</label>
+              <input type="text" id="f-venue" placeholder="Venue name or city" />
+            </div>
+            <div class="form-group">
+              <label for="f-guests">Expected Attendance</label>
+              <select id="f-guests">
+                <option value="">— Select —</option>
+                <option>Under 100</option>
+                <option>100 – 300</option>
+                <option>300 – 1,000</option>
+                <option>1,000 – 5,000</option>
+                <option>5,000+</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-notes">Additional Details</label>
+            <textarea id="f-notes" placeholder="Tell us about your event, any special requests, preferred set length, production needs, etc."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;padding:1rem;">Send Booking Request</button>
+          <p class="form-note">We'll respond within 1–2 business days. No obligation.</p>
+        </form>
+
+        <div class="form-success" id="form-success">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <h3>Request Received!</h3>
+          <p>Thanks — we'll be in touch within 1–2 business days to discuss your event details.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo" style="margin-bottom:0.75rem;">
+      <img src="logo.png" alt="Reminiscing" style="height:90px;width:auto;filter:drop-shadow(0 2px 10px rgba(240,98,31,0.4));" />
+    </div>
+    <p class="footer-tagline">A Yacht Rock Tribute &mdash; Sailing the Smooth Seas of Sound</p>
+    <div class="footer-social">
+      <!-- Facebook -->
+      <a href="#" class="social-link" title="Facebook">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <!-- Instagram -->
+      <a href="#" class="social-link" title="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <!-- YouTube -->
+      <a href="#" class="social-link" title="YouTube">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0D1B2A"/></svg>
+      </a>
+      <!-- Spotify -->
+      <a href="#" class="social-link" title="Spotify">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 13.5c2.5-1 5.5-1 8 0" stroke="#0D1B2A" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M7 10.5c3-1.2 7-1.2 10 0" stroke="#0D1B2A" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M9 16.5c2-0.8 4-0.8 6 0" stroke="#0D1B2A" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </a>
+    </div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#media">Media</a>
+      <a href="#calendar">Shows</a>
+      <a href="#booking">Book Us</a>
+      <a href="mailto:booking@reminiscingband.com">Contact</a>
+    </div>
+    <p class="footer-copy">&copy; 2025 Reminiscing. All rights reserved. Designed with love for the groove.</p>
+  </div>
+</footer>
+
+<!-- ══════════ LIGHTBOX ══════════ -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLightbox()">&#10005;</button>
+    <div class="lightbox-body" id="lightbox-body">
+      <span id="lightbox-text"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+  /* ── Nav scroll ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* ── Mobile nav ── */
+  document.getElementById('nav-toggle').addEventListener('click', () => {
+    document.getElementById('nav-links').classList.toggle('open');
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('nav-links').classList.remove('open'));
+  });
+
+  /* ── Media tabs ── */
+  document.querySelectorAll('.media-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.media-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.media-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ── Lightbox ── */
+  function openLightbox(text) {
+    document.getElementById('lightbox-text').textContent = text + ' — image/video placeholder';
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(e) {
+    if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.tagName === 'BUTTON') {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  /* ── Simulated audio player ── */
+  const trackData = [
+    { name: 'Ride Like the Wind', artist: 'Christopher Cross' },
+    { name: 'Peg', artist: 'Steely Dan' },
+    { name: 'Footloose', artist: 'Kenny Loggins' },
+    { name: 'Sara Smile', artist: 'Hall & Oates' },
+    { name: 'Steal Away', artist: 'Robbie Dupree' },
+  ];
+  let currentTrack = -1;
+  let isPlaying = false;
+  let progressInterval = null;
+  let progress = 0;
+
+  function playTrack(el, idx) {
+    document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
+    el.classList.add('playing');
+    currentTrack = idx;
+    isPlaying = true;
+    progress = 0;
+    document.getElementById('player-bar').classList.add('visible');
+    document.getElementById('player-title').textContent =
+      trackData[idx].name + ' — ' + trackData[idx].artist;
+    setPlayState(true);
+    startProgress();
+  }
+
+  function setPlayState(playing) {
+    document.getElementById('play-icon').style.display = playing ? 'none' : 'block';
+    document.getElementById('pause-icon').style.display = playing ? 'block' : 'none';
+  }
+
+  function togglePlay() {
+    isPlaying = !isPlaying;
+    setPlayState(isPlaying);
+    if (isPlaying) startProgress(); else clearInterval(progressInterval);
+  }
+
+  function startProgress() {
+    clearInterval(progressInterval);
+    progressInterval = setInterval(() => {
+      progress = Math.min(progress + 0.4, 100);
+      document.getElementById('progress-fill').style.width = progress + '%';
+      if (progress >= 100) { clearInterval(progressInterval); nextTrack(); }
+    }, 200);
+  }
+
+  function seekTrack(e) {
+    const bar = e.currentTarget;
+    progress = (e.offsetX / bar.offsetWidth) * 100;
+    document.getElementById('progress-fill').style.width = progress + '%';
+  }
+
+  function nextTrack() {
+    const next = (currentTrack + 1) % trackData.length;
+    const el = document.querySelectorAll('.track')[next];
+    playTrack(el, next);
+  }
+
+  function prevTrack() {
+    const prev = (currentTrack - 1 + trackData.length) % trackData.length;
+    const el = document.querySelectorAll('.track')[prev];
+    playTrack(el, prev);
+  }
+
+  /* ── Gig Calendar ── */
+  const gigs = [
+    { day:'22', month:'Mar', venue:'Pelican Bay Brewing Co.', location:'San Diego, CA', time:'7:00 PM Doors • 8:00 PM Show', tags:['public'], tickets:'ticketweb.com', soldOut:false },
+    { day:'05', month:'Apr', venue:'Harbor Jazz &amp; Blues Festival', location:'Long Beach, CA', time:'5:30 PM', tags:['festival','public'], tickets:'harborjazz.com', soldOut:false },
+    { day:'19', month:'Apr', venue:'Private Estate Gala', location:'Malibu, CA', time:'7:00 PM', tags:['private'], tickets:null, soldOut:false },
+    { day:'03', month:'May', venue:'The Salty Anchor', location:'Newport Beach, CA', time:'8:30 PM', tags:['public'], tickets:'eventbrite.com', soldOut:false },
+    { day:'17', month:'May', venue:'Starboard Yacht Club Charity Ball', location:'Marina del Rey, CA', time:'6:00 PM', tags:['private','vip'], tickets:null, soldOut:true },
+    { day:'07', month:'Jun', venue:'Coastal Vineyard Concert Series', location:'Santa Barbara, CA', time:'5:00 PM', tags:['public','festival'], tickets:'coastalvineyard.com', soldOut:false },
+    { day:'21', month:'Jun', venue:'Midsummer Night Cruise', location:'San Francisco Bay', time:'7:00 PM Departure', tags:['private','vip'], tickets:'sfbaycruises.com', soldOut:false },
+    { day:'12', month:'Jul', venue:'Independence Blast at Bayfront Park', location:'Miami, FL', time:'6:00 PM', tags:['festival','public'], tickets:'eventbrite.com', soldOut:false },
+  ];
+
+  function renderGigs(filter) {
+    const list = document.getElementById('gig-list');
+    const filtered = filter === 'all' ? gigs : gigs.filter(g => g.tags.includes(filter));
+    list.innerHTML = filtered.map(g => `
+      <div class="gig" data-tags="${g.tags.join(' ')}">
+        <div class="gig-date">
+          <div class="gig-day">${g.day}</div>
+          <div class="gig-month">${g.month} 2025</div>
+        </div>
+        <div class="gig-info">
+          <div class="gig-venue">${g.venue}</div>
+          <div class="gig-location">&#128205; ${g.location}</div>
+          <div class="gig-time">&#128336; ${g.time}</div>
+          <div class="gig-tags">
+            ${g.tags.map(t => `<span class="gig-tag ${t === 'vip' ? 'vip' : ''}">${t.charAt(0).toUpperCase()+t.slice(1)}</span>`).join('')}
+          </div>
+        </div>
+        <div class="gig-action">
+          ${g.soldOut
+            ? `<span class="gig-sold-out">Sold Out</span>`
+            : g.tickets
+              ? `<a href="#" class="btn-ticket">Get Tickets</a>`
+              : `<a href="#booking" class="btn-ticket">Inquire</a>`}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterGigs() {
+    renderGigs(document.getElementById('gig-filter').value);
+  }
+
+  renderGigs('all');
+
+  /* ── Booking form ── */
+  function submitBooking(e) {
+    e.preventDefault();
+    document.getElementById('booking-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+    document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+</body>
+</html>
