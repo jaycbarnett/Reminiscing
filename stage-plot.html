@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reminiscing — Stage Plot</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: #f4f0e8;
+      color: #1a1a1a;
+      padding: 2rem;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0C1A2E 0%, #112240 60%, #0a1e30 100%);
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+    .header-left { display: flex; align-items: center; gap: 1.25rem; }
+    .header-logo img { height: 64px; width: auto; }
+    .header-title { font-size: 1.5rem; font-weight: 900; color: #F5A623; letter-spacing: 0.05em; text-transform: uppercase; }
+    .header-sub { font-size: 0.8rem; color: rgba(253,246,227,0.55); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.2rem; }
+    .header-meta { text-align: right; }
+    .header-meta p { font-size: 0.78rem; color: rgba(253,246,227,0.5); line-height: 1.7; }
+    .header-meta a { color: #F5A623; }
+
+    /* ── Stage area ── */
+    .stage-section { padding: 1.5rem 2.5rem; }
+
+    .stage-label-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .stage-label-bar span { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #999; }
+
+    svg#stage-plot { display: block; width: 100%; height: auto; }
+
+    .audience-bar {
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-top: 0.4rem;
+      padding: 0.4rem;
+      border-top: 2px dashed #ddd;
+    }
+
+    /* ── Info grid ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      padding: 0 2.5rem 2rem;
+    }
+
+    .info-box {
+      border: 1px solid #e0d8cc;
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+    }
+    .info-box h3 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F5A623;
+      border-bottom: 1px solid #f0e8d8;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .legend { display: flex; flex-direction: column; gap: 0.45rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: #444; }
+    .legend-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .tech-list { display: flex; flex-direction: column; gap: 0.32rem; }
+    .tech-item { font-size: 0.82rem; color: #444; display: flex; gap: 0.5rem; }
+    .tech-item strong { color: #1a1a1a; min-width: 120px; flex-shrink: 0; }
+
+    .channel-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .channel-table th {
+      background: #f4f0e8;
+      padding: 0.4rem 0.6rem;
+      text-align: left;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      border-bottom: 1px solid #e0d8cc;
+    }
+    .channel-table td { padding: 0.32rem 0.6rem; border-bottom: 1px solid #f0ebe0; color: #333; }
+    .channel-table tr:last-child td { border-bottom: none; }
+    .channel-table tr:hover td { background: #faf6ee; }
+
+    /* ── Footer ── */
+    .plot-footer {
+      background: #f4f0e8;
+      padding: 0.75rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e0d8cc;
+    }
+    .plot-footer p { font-size: 0.75rem; color: #888; }
+    .plot-footer a { color: #F5A623; }
+    .print-btn {
+      padding: 0.5rem 1.25rem;
+      background: #F5A623;
+      border: none;
+      border-radius: 2px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #0C1A2E;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .print-btn:hover { background: #FFD166; }
+    .back-btn {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid #C9B07A;
+      border-radius: 2px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { color: #0C1A2E; border-color: #0C1A2E; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { box-shadow: none; }
+      .plot-footer .print-btn, .plot-footer .back-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo"><img src="logo.png" alt="Reminiscing" /></div>
+      <div class="header-text">
+        <div class="header-title">Stage Plot</div>
+        <div class="header-sub">6-Piece Yacht Rock Tribute</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <p>booking@reminiscingband.com</p>
+      <p>(555) 867-5309</p>
+      <p>Approximate stage: <strong style="color:#F5A623;">36&prime; W &times; 20&prime; D</strong></p>
+    </div>
+  </div>
+
+  <!-- Stage SVG -->
+  <div class="stage-section">
+    <div class="stage-label-bar">
+      <span>⬅ Stage Left (audience right)</span>
+      <span>↑ Upstage / Back</span>
+      <span>Stage Right (audience left) ➡</span>
+    </div>
+
+    <!--
+      LAYOUT (performer's perspective, left = SL, right = SR):
+
+      UPSTAGE:   [Lead Guitar amp · SL]  [Drums · Center]  [Keys · SR]  [Bass amp · SR]
+      DOWNSTAGE: [Lead Guitar · SL]  [BG Vocals · SL]  [Lead Vox · C]  [open · SR]
+    -->
+    <svg id="stage-plot" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" font-family="Lato, sans-serif">
+      <defs>
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e8e0d0" stroke-width="0.5"/>
+        </pattern>
+        <filter id="sh">
+          <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.15)"/>
+        </filter>
+      </defs>
+
+      <!-- Stage floor -->
+      <rect x="20" y="10" width="860" height="390" rx="4" fill="#faf7f0" stroke="#c8bda0" stroke-width="2"/>
+      <rect x="20" y="10" width="860" height="390" rx="4" fill="url(#grid)"/>
+
+      <!-- Apron -->
+      <rect x="20" y="348" width="860" height="52" rx="0" fill="#f0e8d4" stroke="#c8bda0" stroke-width="1" opacity="0.6"/>
+      <text x="450" y="378" text-anchor="middle" font-size="10" fill="#b0a080" letter-spacing="3" font-weight="700">D O W N S T A G E</text>
+      <text x="450" y="28" text-anchor="middle" font-size="10" fill="#b0a080" letter-spacing="3" font-weight="700">U P S T A G E</text>
+
+      <!-- Back wall -->
+      <rect x="20" y="10" width="860" height="12" rx="4" fill="#c8bda0"/>
+
+      <!-- ══════════ STAGE LEFT — BACK (Lead Guitar Amp) ══════════ -->
+      <!-- Guitar amp cabinet SL back -->
+      <rect x="35" y="32" width="50" height="42" rx="3" fill="#2c2c2c" stroke="#111" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="60" cy="53" rx="14" ry="14" fill="#1a1a1a" stroke="#444" stroke-width="1"/>
+      <ellipse cx="60" cy="53" rx="10" ry="10" fill="#0a0a0a"/>
+      <text x="60" y="22" text-anchor="middle" font-size="8" fill="#999" letter-spacing="1">GTR AMP</text>
+
+      <!-- ══════════ DRUMS — CENTER BACK ══════════ -->
+      <g transform="translate(420, 115)">
+        <!-- Riser outline -->
+        <rect x="-85" y="-70" width="170" height="120" rx="4" fill="#ede4cc" stroke="#c8b898" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="0" y="-57" text-anchor="middle" font-size="8" fill="#a09070" letter-spacing="1" font-weight="700">RISER  8′ × 6′</text>
+
+        <!-- Bass drum -->
+        <ellipse cx="0" cy="25" rx="30" ry="30" fill="#1a1a1a" stroke="#333" stroke-width="2" filter="url(#sh)"/>
+        <ellipse cx="0" cy="25" rx="23" ry="23" fill="#f5a623" stroke="#d48800" stroke-width="1.5"/>
+        <text x="0" y="22" text-anchor="middle" font-size="8" fill="#0C1A2E" font-weight="900">RMNSC</text>
+        <text x="0" y="32" text-anchor="middle" font-size="6" fill="#0C1A2E" font-weight="700">★</text>
+
+        <!-- Snare -->
+        <ellipse cx="-22" cy="-2" rx="14" ry="14" fill="#888" stroke="#555" stroke-width="1.5" filter="url(#sh)"/>
+        <ellipse cx="-22" cy="-2" rx="11" ry="11" fill="#aaa"/>
+
+        <!-- Hi-Hat -->
+        <ellipse cx="-58" cy="-16" rx="15" ry="4" fill="#C9B07A" stroke="#a08040" stroke-width="1.5"/>
+        <ellipse cx="-58" cy="-22" rx="15" ry="4" fill="#d4bf8a" stroke="#a08040" stroke-width="1"/>
+        <line x1="-58" y1="5" x2="-58" y2="42" stroke="#888" stroke-width="2"/>
+
+        <!-- Rack toms -->
+        <ellipse cx="16" cy="-22" rx="13" ry="13" fill="#888" stroke="#555" stroke-width="1.5" filter="url(#sh)"/>
+        <ellipse cx="16" cy="-22" rx="10" ry="10" fill="#aaa"/>
+        <ellipse cx="41" cy="-20" rx="14" ry="14" fill="#888" stroke="#555" stroke-width="1.5" filter="url(#sh)"/>
+        <ellipse cx="41" cy="-20" rx="11" ry="11" fill="#aaa"/>
+
+        <!-- Floor tom -->
+        <ellipse cx="65" cy="12" rx="17" ry="17" fill="#888" stroke="#555" stroke-width="1.5" filter="url(#sh)"/>
+        <ellipse cx="65" cy="12" rx="14" ry="14" fill="#aaa"/>
+
+        <!-- Ride cymbal -->
+        <ellipse cx="68" cy="-26" rx="18" ry="5" fill="#C9B07A" stroke="#a08040" stroke-width="1" opacity="0.85"/>
+        <!-- Crash cymbal -->
+        <ellipse cx="-44" cy="-44" rx="15" ry="4" fill="#C9B07A" stroke="#a08040" stroke-width="1" opacity="0.85"/>
+        <!-- Throne -->
+        <circle cx="0" cy="38" r="7" fill="#555" stroke="#333" stroke-width="1"/>
+      </g>
+      <!-- Drum monitor -->
+      <polygon points="358,245 488,245 472,268 374,268" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="423" y="261" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Drum label -->
+      <rect x="360" y="278" width="120" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="420" y="295" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">DRUMS / PERC</text>
+      <text x="420" y="309" text-anchor="middle" font-size="9" fill="#555">Tom Ward</text>
+
+      <!-- ══════════ KEYS — STAGE RIGHT BACK ══════════ -->
+      <g transform="translate(650, 90)" filter="url(#sh)">
+        <!-- Keyboard body -->
+        <rect x="-50" y="-20" width="100" height="40" rx="3" fill="#2c3e6e" stroke="#1a2a50" stroke-width="1.5"/>
+        <!-- White keys -->
+        <g fill="white" opacity="0.9">
+          <rect x="-45" y="-16" width="8" height="25" rx="1"/>
+          <rect x="-34" y="-16" width="8" height="25" rx="1"/>
+          <rect x="-23" y="-16" width="8" height="25" rx="1"/>
+          <rect x="-12" y="-16" width="8" height="25" rx="1"/>
+          <rect x="-1"  y="-16" width="8" height="25" rx="1"/>
+          <rect x="10"  y="-16" width="8" height="25" rx="1"/>
+          <rect x="21"  y="-16" width="8" height="25" rx="1"/>
+          <rect x="32"  y="-16" width="8" height="25" rx="1"/>
+        </g>
+        <!-- Black keys -->
+        <g fill="#0C1A2E">
+          <rect x="-40" y="-16" width="5" height="15" rx="1"/>
+          <rect x="-18" y="-16" width="5" height="15" rx="1"/>
+          <rect x="4"   y="-16" width="5" height="15" rx="1"/>
+          <rect x="15"  y="-16" width="5" height="15" rx="1"/>
+          <rect x="26"  y="-16" width="5" height="15" rx="1"/>
+        </g>
+        <!-- Stand legs -->
+        <line x1="-35" y1="20" x2="-35" y2="42" stroke="#555" stroke-width="2"/>
+        <line x1="35"  y1="20" x2="35"  y2="42" stroke="#555" stroke-width="2"/>
+        <line x1="-45" y1="42" x2="45"  y2="42" stroke="#555" stroke-width="2"/>
+      </g>
+      <!-- Keys DI box -->
+      <rect x="612" y="140" width="16" height="10" rx="1" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+      <text x="620" y="148" text-anchor="middle" font-size="5.5" fill="white" font-weight="700">DI</text>
+      <!-- Keys monitor -->
+      <polygon points="588,160 688,160 672,182 604,182" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="638" y="175" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Keys label -->
+      <rect x="594" y="192" width="112" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="650" y="209" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">KEYS</text>
+      <text x="650" y="223" text-anchor="middle" font-size="9" fill="#555">Steve Richards</text>
+
+      <!-- ══════════ BASS — STAGE RIGHT (FAR) ══════════ -->
+      <!-- Bass amp -->
+      <rect x="796" y="32" width="58" height="50" rx="3" fill="#1c1c1c" stroke="#111" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="825" cy="57" rx="16" ry="16" fill="#0a0a0a" stroke="#333" stroke-width="1"/>
+      <ellipse cx="825" cy="57" rx="11" ry="11" fill="#111"/>
+      <text x="825" y="22" text-anchor="middle" font-size="8" fill="#999" letter-spacing="1">BASS AMP</text>
+      <!-- Bass guitar -->
+      <g transform="translate(830, 115)" filter="url(#sh)">
+        <ellipse cx="0" cy="5" rx="20" ry="26" fill="#704214" stroke="#4a2a08" stroke-width="1.5"/>
+        <ellipse cx="-7" cy="-18" rx="9" ry="12" fill="#7a4a18" stroke="#4a2a08" stroke-width="1"/>
+        <rect x="-4" y="-26" width="8" height="48" rx="2" fill="#d4a060" stroke="#9a6020" stroke-width="1"/>
+        <line x1="-1.5" y1="-26" x2="-1.5" y2="28" stroke="#bbb" stroke-width="0.5"/>
+        <line x1="0"    y1="-26" x2="0"    y2="28" stroke="#bbb" stroke-width="0.5"/>
+        <line x1="1.5"  y1="-26" x2="1.5"  y2="28" stroke="#bbb" stroke-width="0.5"/>
+        <rect x="-13" y="4"  width="26" height="7" rx="1" fill="#111" stroke="#333" stroke-width="0.5"/>
+        <rect x="-13" y="14" width="26" height="7" rx="1" fill="#111" stroke="#333" stroke-width="0.5"/>
+      </g>
+      <!-- Bass DI -->
+      <rect x="806" y="152" width="16" height="10" rx="1" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+      <text x="814" y="160" text-anchor="middle" font-size="5.5" fill="white" font-weight="700">DI</text>
+      <!-- Bass monitor -->
+      <polygon points="778,172 866,172 852,194 792,194" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="822" y="187" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Bass label -->
+      <rect x="776" y="204" width="104" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="828" y="221" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">BASS</text>
+      <text x="828" y="235" text-anchor="middle" font-size="9" fill="#555">Doug Smith</text>
+
+      <!-- ══════════ LEAD GUITAR — STAGE LEFT FRONT ══════════ -->
+      <g transform="translate(130, 270)" filter="url(#sh)">
+        <ellipse cx="0" cy="5" rx="20" ry="24" fill="#c0392b" stroke="#8b1a1a" stroke-width="1.5"/>
+        <ellipse cx="-7" cy="-17" rx="9" ry="11" fill="#d04020" stroke="#8b1a1a" stroke-width="1"/>
+        <rect x="-3" y="-26" width="6" height="44" rx="2" fill="#d4a060" stroke="#9a6020" stroke-width="1"/>
+        <line x1="-1.5" y1="-26" x2="-1.5" y2="25" stroke="#aaa" stroke-width="0.4"/>
+        <line x1="0"    y1="-26" x2="0"    y2="25" stroke="#aaa" stroke-width="0.4"/>
+        <line x1="1.5"  y1="-26" x2="1.5"  y2="25" stroke="#aaa" stroke-width="0.4"/>
+        <rect x="-12" y="5" width="24" height="6" rx="1" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+      </g>
+      <!-- Guitar monitor -->
+      <polygon points="82,315 184,315 170,338 96,338" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="133" y="331" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Guitar label -->
+      <rect x="74" y="348" width="112" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="130" y="365" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">LEAD GUITAR</text>
+      <text x="130" y="379" text-anchor="middle" font-size="9" fill="#555">Jay Barnett</text>
+
+      <!-- ══════════ BG VOCALS — STAGE LEFT (near center) ══════════ -->
+      <!-- Mic stand -->
+      <line x1="295" y1="245" x2="295" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+      <line x1="255" y1="320" x2="335" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+      <!-- Capsule -->
+      <ellipse cx="295" cy="237" rx="8" ry="11" fill="#333" stroke="#111" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="295" cy="235" rx="6" ry="7" fill="#555"/>
+      <!-- Monitor -->
+      <polygon points="248,328 344,328 330,350 262,350" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="295" y="343" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Label -->
+      <rect x="236" y="358" width="118" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="295" y="375" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">BG VOCALS</text>
+      <text x="295" y="389" text-anchor="middle" font-size="9" fill="#555">Vicki Waves</text>
+
+      <!-- ══════════ LEAD VOCALS / SAX — CENTER FRONT ══════════ -->
+      <!-- Mic stand -->
+      <line x1="490" y1="238" x2="490" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+      <line x1="450" y1="320" x2="530" y2="320" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+      <!-- Capsule -->
+      <ellipse cx="490" cy="229" rx="8" ry="11" fill="#333" stroke="#111" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="490" cy="227" rx="6" ry="7" fill="#555"/>
+      <!-- Sax icon -->
+      <g transform="translate(516, 255)" opacity="0.85">
+        <path d="M0,-22 Q13,-18 16,2 Q18,22 9,34" fill="none" stroke="#C9B07A" stroke-width="5" stroke-linecap="round"/>
+        <path d="M9,34 Q4,44 -4,41" fill="none" stroke="#C9B07A" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="4"  cy="-8"  r="2.5" fill="#a08040"/>
+        <circle cx="10" cy="6"   r="2.5" fill="#a08040"/>
+        <circle cx="12" cy="20"  r="2.5" fill="#a08040"/>
+      </g>
+      <!-- Monitor -->
+      <polygon points="442,328 540,328 526,350 456,350" fill="#777" stroke="#555" stroke-width="1" opacity="0.75"/>
+      <text x="490" y="343" text-anchor="middle" font-size="8" fill="white" font-weight="700">MON</text>
+      <!-- Label -->
+      <rect x="408" y="358" width="164" height="40" rx="3" fill="rgba(44,62,110,0.1)" stroke="rgba(44,62,110,0.28)" stroke-width="1"/>
+      <text x="490" y="375" text-anchor="middle" font-size="11" fill="#2c3e6e" font-weight="900">LEAD VOX / SAX / GTR</text>
+      <text x="490" y="389" text-anchor="middle" font-size="9" fill="#555">David Vece</text>
+
+      <!-- ══════════ PA Mains ══════════ -->
+      <rect x="24" y="290" width="30" height="52" rx="3" fill="#1a1a1a" stroke="#333" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="39" cy="308" rx="10" ry="10" fill="#222" stroke="#444" stroke-width="1"/>
+      <ellipse cx="39" cy="328" rx="7"  ry="7"  fill="#222" stroke="#444" stroke-width="1"/>
+      <text x="39" y="355" text-anchor="middle" font-size="7" fill="#888">PA L</text>
+
+      <rect x="846" y="290" width="30" height="52" rx="3" fill="#1a1a1a" stroke="#333" stroke-width="1.5" filter="url(#sh)"/>
+      <ellipse cx="861" cy="308" rx="10" ry="10" fill="#222" stroke="#444" stroke-width="1"/>
+      <ellipse cx="861" cy="328" rx="7"  ry="7"  fill="#222" stroke="#444" stroke-width="1"/>
+      <text x="861" y="355" text-anchor="middle" font-size="7" fill="#888">PA R</text>
+
+      <!-- ══════════ Dimension line ══════════ -->
+      <line x1="30" y1="418" x2="870" y2="418" stroke="#c0b090" stroke-width="1"/>
+      <line x1="30"  y1="413" x2="30"  y2="423" stroke="#c0b090" stroke-width="1"/>
+      <line x1="870" y1="413" x2="870" y2="423" stroke="#c0b090" stroke-width="1"/>
+      <text x="450" y="429" text-anchor="middle" font-size="9" fill="#b0a080">← 36 feet →</text>
+    </svg>
+
+    <div class="audience-bar">▼ &nbsp; AUDIENCE &nbsp; ▼</div>
+  </div>
+
+  <!-- Info grid -->
+  <div class="info-grid">
+
+    <div class="info-box">
+      <h3>Legend</h3>
+      <div class="legend">
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><rect x="1" y="5" width="18" height="10" rx="2" fill="#2c3e6e"/></svg>Keyboard / Keys
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="8" ry="8" fill="#1a1a1a"/><ellipse cx="10" cy="10" rx="6" ry="6" fill="#f5a623"/></svg>Drum Kit (on riser)
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><ellipse cx="10" cy="11" rx="7" ry="9" fill="#704214"/><rect x="7" y="2" width="6" height="14" rx="1" fill="#d4a060"/></svg>Bass Guitar
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><ellipse cx="10" cy="11" rx="7" ry="9" fill="#c0392b"/><rect x="7" y="2" width="6" height="14" rx="1" fill="#d4a060"/></svg>Electric Guitar
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><ellipse cx="10" cy="7" rx="5" ry="7" fill="#333"/><line x1="10" y1="14" x2="10" y2="20" stroke="#555" stroke-width="2"/></svg>Vocal Microphone
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><polygon points="2,4 18,4 16,14 4,14" fill="#777"/></svg>Monitor Wedge
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><rect x="1" y="5" width="18" height="10" rx="1" fill="#e74c3c"/><text x="10" y="13" text-anchor="middle" font-size="6" fill="white" font-weight="700">DI</text></svg>DI Box (direct inject)
+        </div>
+        <div class="legend-item">
+          <svg class="legend-icon" viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="2" fill="#1a1a1a"/><circle cx="10" cy="10" r="5" fill="#222"/></svg>Amplifier Cabinet
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Technical Requirements</h3>
+      <div class="tech-list">
+        <div class="tech-item"><strong>Stage Size:</strong> 36′ W × 20′ D minimum</div>
+        <div class="tech-item"><strong>Power:</strong> 4 × 20A circuits (dedicated)</div>
+        <div class="tech-item"><strong>Drum Riser:</strong> 8′ × 6′ (8″ height preferred)</div>
+        <div class="tech-item"><strong>Monitors:</strong> 6 mixes minimum</div>
+        <div class="tech-item"><strong>PA:</strong> Venue-supplied or band-supplied</div>
+        <div class="tech-item"><strong>Load-In:</strong> 2 hours before doors</div>
+        <div class="tech-item"><strong>Soundcheck:</strong> 60–90 minutes</div>
+        <div class="tech-item"><strong>Backline:</strong> Band provides all backline</div>
+        <div class="tech-item"><strong>Lighting:</strong> Warm wash preferred (ambers/golds)</div>
+        <div class="tech-item"><strong>Internet:</strong> Not required</div>
+      </div>
+    </div>
+
+    <div class="info-box" style="grid-column: 1 / -1;">
+      <h3>Input / Channel List</h3>
+      <table class="channel-table">
+        <thead>
+          <tr><th>Ch.</th><th>Instrument / Source</th><th>Performer</th><th>Mic / DI</th><th>Stand</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Kick Drum</td><td>Tom Ward</td><td>Beta 52A or D112</td><td>—</td><td>Inside kick</td></tr>
+          <tr><td>2</td><td>Snare Top</td><td>Tom Ward</td><td>SM57</td><td>—</td><td>—</td></tr>
+          <tr><td>3</td><td>Hi-Hat</td><td>Tom Ward</td><td>KM184 / SM81</td><td>Short boom</td><td>—</td></tr>
+          <tr><td>4</td><td>Rack Tom 1</td><td>Tom Ward</td><td>SM98 / e604</td><td>—</td><td>Clip-on</td></tr>
+          <tr><td>5</td><td>Rack Tom 2</td><td>Tom Ward</td><td>SM98 / e604</td><td>—</td><td>Clip-on</td></tr>
+          <tr><td>6</td><td>Floor Tom</td><td>Tom Ward</td><td>SM98 / e604</td><td>—</td><td>Clip-on</td></tr>
+          <tr><td>7</td><td>Overhead L</td><td>Tom Ward</td><td>KM184 / SM81</td><td>Tall boom</td><td>XY pair</td></tr>
+          <tr><td>8</td><td>Overhead R</td><td>Tom Ward</td><td>KM184 / SM81</td><td>Tall boom</td><td>XY pair</td></tr>
+          <tr><td>9</td><td>Bass Guitar DI</td><td>Doug Smith</td><td>Active DI</td><td>—</td><td>Post-preamp · Stage Right</td></tr>
+          <tr><td>10</td><td>Bass Amp Mic</td><td>Doug Smith</td><td>SM57 / Beta 91</td><td>Short boom</td><td>Optional</td></tr>
+          <tr><td>11</td><td>Keys L</td><td>Steve Richards</td><td>Passive DI</td><td>—</td><td>Stereo pair · Stage Right</td></tr>
+          <tr><td>12</td><td>Keys R</td><td>Steve Richards</td><td>Passive DI</td><td>—</td><td>Stereo pair · Stage Right</td></tr>
+          <tr><td>13</td><td>Lead Guitar Amp</td><td>Jay Barnett</td><td>SM57</td><td>Short boom</td><td>Stage Left</td></tr>
+          <tr><td>14</td><td>Lead Vocal</td><td>David Vece</td><td>SM58 / Beta 58A</td><td>Tall boom</td><td>Center stage</td></tr>
+          <tr><td>15</td><td>Saxophone</td><td>David Vece</td><td>SM57 / clip mic</td><td>Short boom</td><td>—</td></tr>
+          <tr><td>16</td><td>Acoustic Guitar</td><td>David Vece</td><td>Passive DI</td><td>—</td><td>When used</td></tr>
+          <tr><td>17</td><td>BG Vocals</td><td>Vicki Waves</td><td>SM58 / Beta 58A</td><td>Tall boom</td><td>Stage Left</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="plot-footer">
+    <div>
+      <p>Questions? <a href="mailto:booking@reminiscingband.com">booking@reminiscingband.com</a> &bull; (555) 867-5309</p>
+      <p style="margin-top:0.25rem;">Document current as of 2025 — confirm details at advance.</p>
+    </div>
+    <div style="display:flex;gap:0.75rem;align-items:center;">
+      <a href="index.html" class="back-btn">← Back to Site</a>
+      <button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
