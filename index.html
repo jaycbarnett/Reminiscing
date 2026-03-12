@@ -705,7 +705,9 @@
       color: var(--tan);
       font-style: italic;
       font-size: 1.1rem;
+      overflow: hidden;
     }
+    .lightbox-body.lightbox-video { aspect-ratio: 16/9; }
     .lightbox-close {
       position: absolute;
       top: 0.75rem; right: 0.75rem;
@@ -873,84 +875,13 @@
 
     <!-- PHOTOS -->
     <div class="media-panel active" id="tab-photos">
-      <div class="photo-grid">
-        <!-- Replace src with real images; placeholders shown below -->
-        <div class="photo-item" onclick="openLightbox('Photo: Live at the Bayside Amphitheater, 2024')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Live @ Bayside Amphitheater</span>
-          </div>
-        </div>
-        <div class="photo-item" onclick="openLightbox('Photo: Studio Session, 2023')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Studio Session 2023</span>
-          </div>
-        </div>
-        <div class="photo-item" onclick="openLightbox('Photo: Harbor Festival Main Stage')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Harbor Festival Main Stage</span>
-          </div>
-        </div>
-        <div class="photo-item" onclick="openLightbox('Photo: Private Charter — S/V Lady Jane')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Private Charter — S/V Lady Jane</span>
-          </div>
-        </div>
-        <div class="photo-item" onclick="openLightbox('Photo: Soundcheck Blues')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Soundcheck Blues</span>
-          </div>
-        </div>
-        <div class="photo-item" onclick="openLightbox('Photo: Rooftop Sessions 2024')">
-          <div class="photo-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span>Rooftop Sessions 2024</span>
-          </div>
-        </div>
+      <div class="photo-grid" id="photo-grid">
       </div>
     </div>
 
     <!-- VIDEOS -->
     <div class="media-panel" id="tab-videos">
-      <div class="video-grid">
-        <div class="video-item">
-          <div class="video-thumb" onclick="openLightbox('Video: Sailing (Christopher Cross cover) — Live')">
-            <div class="play-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-          </div>
-          <div class="video-label">
-            <div>Sailing (Christopher Cross) — Live</div>
-            <small>Harbor Jazz Festival &bull; June 2024</small>
-          </div>
-        </div>
-        <div class="video-item">
-          <div class="video-thumb" onclick="openLightbox('Video: What a Fool Believes (Doobie Bros) — Live')">
-            <div class="play-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-          </div>
-          <div class="video-label">
-            <div>What a Fool Believes — Live</div>
-            <small>Bayside Amphitheater &bull; Aug 2024</small>
-          </div>
-        </div>
-        <div class="video-item">
-          <div class="video-thumb" onclick="openLightbox('Video: Reelin In The Years (Steely Dan) — Acoustic')">
-            <div class="play-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-          </div>
-          <div class="video-label">
-            <div>Reelin' In the Years — Acoustic Set</div>
-            <small>Rooftop Sessions &bull; Mar 2024</small>
-          </div>
-        </div>
-      </div>
+      <div class="video-grid" id="video-grid"></div>
       <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--tan);">
         &#9654; Subscribe on <a href="#" style="color:var(--gold);">YouTube</a> for full show recordings.
       </p>
@@ -958,53 +889,7 @@
 
     <!-- MUSIC -->
     <div class="media-panel" id="tab-music">
-      <div class="tracks-list" id="tracks-list">
-        <div class="track" data-index="0" onclick="playTrack(this,0)">
-          <span class="track-num">1</span>
-          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <div class="track-info">
-            <div class="track-name">Ride Like the Wind</div>
-            <div class="track-meta">Christopher Cross &bull; Live Recording</div>
-          </div>
-          <span class="track-duration">4:12</span>
-        </div>
-        <div class="track" data-index="1" onclick="playTrack(this,1)">
-          <span class="track-num">2</span>
-          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <div class="track-info">
-            <div class="track-name">Peg</div>
-            <div class="track-meta">Steely Dan &bull; Studio Demo</div>
-          </div>
-          <span class="track-duration">3:54</span>
-        </div>
-        <div class="track" data-index="2" onclick="playTrack(this,2)">
-          <span class="track-num">3</span>
-          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <div class="track-info">
-            <div class="track-name">Footloose</div>
-            <div class="track-meta">Kenny Loggins &bull; Live Recording</div>
-          </div>
-          <span class="track-duration">3:47</span>
-        </div>
-        <div class="track" data-index="3" onclick="playTrack(this,3)">
-          <span class="track-num">4</span>
-          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <div class="track-info">
-            <div class="track-name">Sara Smile</div>
-            <div class="track-meta">Hall &amp; Oates &bull; Live Recording</div>
-          </div>
-          <span class="track-duration">4:05</span>
-        </div>
-        <div class="track" data-index="4" onclick="playTrack(this,4)">
-          <span class="track-num">5</span>
-          <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <div class="track-info">
-            <div class="track-name">Steal Away</div>
-            <div class="track-meta">Robbie Dupree &bull; Studio Demo</div>
-          </div>
-          <span class="track-duration">4:33</span>
-        </div>
-      </div>
+      <div class="tracks-list" id="tracks-list"></div>
 
       <!-- Simulated player UI -->
       <div class="player-bar" id="player-bar">
@@ -1261,28 +1146,107 @@
     });
   });
 
+  /* ── Site data ── */
+  let siteData = null;
+
+  async function initSite() {
+    try {
+      const res = await fetch('data.json?t=' + Date.now());
+      if (!res.ok) throw new Error();
+      siteData = await res.json();
+    } catch {
+      siteData = { gigs: [], videos: [], photos: [], music: [] };
+    }
+    trackData = siteData.music || [];
+    gigs = siteData.gigs || [];
+    renderPhotos();
+    renderVideos();
+    renderTracks();
+    renderGigs('all');
+  }
+
+  function renderPhotos() {
+    const grid = document.getElementById('photo-grid');
+    const photos = siteData.photos || [];
+    grid.innerHTML = photos.map(p => {
+      const inner = p.url
+        ? `<img src="${p.url}" alt="${p.caption || p.title}" style="width:100%;height:100%;object-fit:cover">`
+        : `<div class="photo-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.caption || p.title}</span></div>`;
+      return `<div class="photo-item" onclick="openLightbox('photo','${p.id}')">${inner}</div>`;
+    }).join('');
+  }
+
+  function renderVideos() {
+    const grid = document.getElementById('video-grid');
+    const videos = siteData.videos || [];
+    grid.innerHTML = videos.map(v => `
+      <div class="video-item">
+        <div class="video-thumb" onclick="openLightbox('video','${v.id}')">
+          <div class="play-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+        <div class="video-label">
+          <div>${v.title}</div>
+          <small>${v.venue} &bull; ${v.date}</small>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderTracks() {
+    const list = document.getElementById('tracks-list');
+    list.innerHTML = trackData.map((t, i) => `
+      <div class="track" data-index="${i}" onclick="playTrack(this,${i})">
+        <span class="track-num">${i + 1}</span>
+        <svg class="track-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <div class="track-info">
+          <div class="track-name">${t.name}</div>
+          <div class="track-meta">${t.artist} &bull; ${t.label || 'Live Recording'}</div>
+        </div>
+        <span class="track-duration">${t.duration || ''}</span>
+      </div>
+    `).join('');
+  }
+
   /* ── Lightbox ── */
-  function openLightbox(text) {
-    document.getElementById('lightbox-text').textContent = text + ' — image/video placeholder';
+  function ytUrlToEmbed(url) {
+    if (!url) return '';
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    return m ? 'https://www.youtube.com/embed/' + m[1] : '';
+  }
+
+  function openLightbox(type, id) {
+    const body = document.getElementById('lightbox-body');
+    body.classList.remove('lightbox-video');
+    if (type === 'photo') {
+      const p = (siteData.photos || []).find(x => x.id === id);
+      body.innerHTML = p && p.url
+        ? `<img src="${p.url}" alt="${p.caption || p.title}" style="max-width:100%;max-height:100%;object-fit:contain">`
+        : `<span>${p ? (p.caption || p.title) : ''} — photo placeholder</span>`;
+    } else if (type === 'video') {
+      body.classList.add('lightbox-video');
+      const v = (siteData.videos || []).find(x => x.id === id);
+      const embed = v && (v.embedUrl || ytUrlToEmbed(v.url));
+      body.innerHTML = embed
+        ? `<iframe width="100%" height="100%" src="${embed}?autoplay=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen></iframe>`
+        : `<span>${v ? v.title : ''} — video placeholder</span>`;
+    }
     document.getElementById('lightbox').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+
   function closeLightbox(e) {
     if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.tagName === 'BUTTON') {
       document.getElementById('lightbox').classList.remove('open');
+      document.getElementById('lightbox-body').innerHTML = '';
       document.body.style.overflow = '';
     }
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
   /* ── Simulated audio player ── */
-  const trackData = [
-    { name: 'Ride Like the Wind', artist: 'Christopher Cross' },
-    { name: 'Peg', artist: 'Steely Dan' },
-    { name: 'Footloose', artist: 'Kenny Loggins' },
-    { name: 'Sara Smile', artist: 'Hall & Oates' },
-    { name: 'Steal Away', artist: 'Robbie Dupree' },
-  ];
+  let trackData = [];
   let currentTrack = -1;
   let isPlaying = false;
   let progressInterval = null;
@@ -1340,11 +1304,7 @@
   }
 
   /* ── Gig Calendar ── */
-  const gigs = [
-    { day:'11', month:'Oct', year:'2025', venue:'Private Estate Celebration', location:'Windermere, FL', time:'7:00 PM', tags:['private'], past:true },
-    { day:'13', month:'Dec', year:'2025', venue:'Holiday Private Gala', location:'Winter Park, FL', time:'6:30 PM', tags:['private'], past:true },
-    { day:'21', month:'Feb', year:'2026', venue:'Private Birthday Party', location:'Lake Mary, FL', time:'7:30 PM', tags:['private'], past:true },
-  ];
+  let gigs = [];
 
   function renderGigs(filter) {
     const list = document.getElementById('gig-list');
@@ -1377,7 +1337,7 @@
     renderGigs(document.getElementById('gig-filter').value);
   }
 
-  renderGigs('all');
+  initSite();
 
   /* ── Booking form ── */
   function submitBooking(e) {

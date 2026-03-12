@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminiscing — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0C1A2E;
+      --navy-mid: #132238;
+      --navy-light: #1A2F4A;
+      --navy-border: #1E3A57;
+      --gold: #F5A623;
+      --gold-mid: #D4A843;
+      --cream: #FDF6E3;
+      --tan: #C8B89A;
+      --teal: #15B8B8;
+      --danger: #E05252;
+      --success: #4CAF50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--navy);
+      color: var(--cream);
+      min-height: 100vh;
+      font-size: 0.9rem;
+    }
+
+    /* ── LOGIN ── */
+    #login-overlay {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    #login-box {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-border);
+      border-radius: 8px;
+      padding: 2.5rem 2rem;
+      width: 100%; max-width: 380px;
+      text-align: center;
+    }
+    #login-box h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold); font-size: 1.8rem; margin-bottom: 0.4rem;
+    }
+    .login-subtitle { color: var(--tan); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .lfg { margin-bottom: 1rem; text-align: left; }
+    .lfg label {
+      display: block; font-size: 0.75rem; color: var(--tan);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;
+    }
+    .lfg input {
+      width: 100%; padding: 0.65rem 0.85rem;
+      background: var(--navy-light); border: 1px solid var(--navy-border);
+      border-radius: 4px; color: var(--cream); font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .lfg input:focus { border-color: var(--gold-mid); }
+    .btn-login {
+      width: 100%; padding: 0.75rem;
+      background: var(--gold); color: var(--navy);
+      font-weight: 700; border: none; border-radius: 4px;
+      cursor: pointer; font-size: 0.95rem; margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-login:hover { background: var(--gold-mid); }
+    .login-msg {
+      border-radius: 4px; padding: 0.5rem 0.75rem;
+      font-size: 0.82rem; margin-bottom: 1rem; display: none;
+    }
+    .login-msg.error { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3); color: #ff8a8a; }
+    .login-msg.success { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); color: #81c784; }
+
+    /* ── APP ── */
+    #admin-app { display: none; }
+    header {
+      background: var(--navy-mid); border-bottom: 1px solid var(--navy-border);
+      padding: 0 1.5rem; height: 60px; display: flex; align-items: center;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner { display: flex; align-items: center; gap: 1rem; width: 100%; }
+    .header-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; flex: 1; }
+    .header-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.42rem 0.85rem; border-radius: 4px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      border: 1px solid transparent; transition: all 0.15s; font-family: inherit;
+    }
+    .btn-primary { background: var(--gold); color: var(--navy); }
+    .btn-primary:hover { background: var(--gold-mid); }
+    .btn-outline { background: transparent; border-color: var(--navy-border); color: var(--cream); }
+    .btn-outline:hover { border-color: var(--gold-mid); color: var(--gold-mid); }
+    .btn-danger { background: transparent; border-color: rgba(224,82,82,0.4); color: #ff8a8a; }
+    .btn-danger:hover { background: rgba(224,82,82,0.1); }
+    .btn-sm { padding: 0.28rem 0.55rem; font-size: 0.75rem; }
+    .btn-ghost { background: transparent; border: none; color: var(--tan); padding: 0.28rem 0.55rem; }
+    .btn-ghost:hover { color: var(--cream); }
+    .btn-publish { background: var(--teal); color: var(--navy); border: none; }
+    .btn-publish:hover { filter: brightness(1.1); }
+    .btn-publish:disabled { opacity: 0.5; cursor: default; filter: none; }
+
+    /* ── UNSAVED ── */
+    #unsaved-badge {
+      display: none; background: rgba(245,166,35,0.12);
+      border: 1px solid rgba(245,166,35,0.35); color: var(--gold);
+      padding: 0.25rem 0.65rem; border-radius: 10px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+
+    /* ── TAB NAV ── */
+    .tab-nav {
+      background: var(--navy-mid); border-bottom: 1px solid var(--navy-border);
+      display: flex; padding: 0 1.5rem; overflow-x: auto;
+    }
+    .tab-btn {
+      background: none; border: none; color: var(--tan);
+      padding: 0.85rem 1.1rem; cursor: pointer;
+      font-size: 0.85rem; font-weight: 600;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .tab-btn:hover { color: var(--cream); }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* ── CONTENT ── */
+    .main-content { padding: 1.5rem; max-width: 1100px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .panel-header h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.35rem; }
+
+    /* ── TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    .data-table th {
+      text-align: left; padding: 0.45rem 0.7rem;
+      color: var(--tan); font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--navy-border);
+    }
+    .data-table td {
+      padding: 0.6rem 0.7rem;
+      border-bottom: 1px solid rgba(30,58,87,0.5);
+      vertical-align: middle;
+    }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .data-table .actions { white-space: nowrap; display: flex; gap: 4px; }
+    .tag-badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.1); color: var(--gold-mid);
+      border: 1px solid rgba(245,166,35,0.22);
+      border-radius: 3px; padding: 0.08rem 0.4rem;
+      font-size: 0.7rem; margin-right: 0.2rem;
+    }
+    .tag-past { background: rgba(200,184,154,0.07); color: var(--tan); border-color: rgba(200,184,154,0.18); }
+    .no-url { color: var(--tan); font-style: italic; font-size: 0.76rem; }
+    .order-btns { display: flex; flex-direction: column; gap: 1px; }
+    .order-btn {
+      background: none; border: none; color: var(--tan);
+      cursor: pointer; font-size: 0.7rem; padding: 1px 4px; line-height: 1;
+    }
+    .order-btn:hover { color: var(--gold); }
+    .thumb-preview {
+      width: 50px; height: 38px; object-fit: cover;
+      border-radius: 3px; border: 1px solid var(--navy-border);
+    }
+    .thumb-empty {
+      width: 50px; height: 38px;
+      background: var(--navy-light); border-radius: 3px;
+      border: 1px solid var(--navy-border);
+    }
+
+    /* ── MODAL ── */
+    #modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    #modal-overlay.open { display: flex; }
+    #modal {
+      background: var(--navy-mid); border: 1px solid var(--navy-border);
+      border-radius: 8px; width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto; padding: 1.75rem;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .modal-header h2 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.15rem; }
+    .modal-close { background: none; border: none; color: var(--tan); font-size: 1.25rem; cursor: pointer; padding: 0.15rem 0.4rem; }
+    .modal-close:hover { color: var(--cream); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.75rem; color: var(--tan);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 0.52rem 0.72rem;
+      background: var(--navy-light); border: 1px solid var(--navy-border);
+      border-radius: 4px; color: var(--cream); font-size: 0.87rem;
+      font-family: inherit; outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--gold-mid); }
+    .form-group select option { background: var(--navy-light); }
+    .form-group textarea { resize: vertical; min-height: 65px; }
+    .hint { font-size: 0.7rem; color: var(--tan); margin-top: 0.22rem; opacity: 0.75; }
+    .modal-actions {
+      display: flex; gap: 0.75rem; justify-content: flex-end;
+      margin-top: 1.5rem; padding-top: 1rem;
+      border-top: 1px solid var(--navy-border);
+    }
+
+    /* ── SETTINGS ── */
+    .settings-section {
+      background: var(--navy-mid); border: 1px solid var(--navy-border);
+      border-radius: 6px; padding: 1.5rem;
+      margin-bottom: 1.25rem; max-width: 600px;
+    }
+    .settings-section h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1rem; margin-bottom: 1rem; }
+    .settings-section p { color: var(--tan); font-size: 0.83rem; margin-bottom: 0.9rem; line-height: 1.55; }
+    .settings-section code { background: var(--navy-light); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.82rem; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--navy-mid); border-radius: 6px;
+      padding: 0.75rem 1rem; font-size: 0.83rem; z-index: 999;
+      transform: translateY(80px); opacity: 0; transition: all 0.25s;
+      border-left: 3px solid var(--gold); max-width: 320px; pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.error { border-color: var(--danger); }
+    #toast.success { border-color: var(--success); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--tan); font-style: italic; }
+
+    @media (max-width: 700px) {
+      .form-row { grid-template-columns: 1fr; }
+      .main-content { padding: 1rem; }
+      .header-title { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-overlay">
+  <div id="login-box">
+    <img src="logo.png" alt="Reminiscing" style="height:56px;display:block;margin:0 auto 1.2rem">
+    <h1>Admin Panel</h1>
+    <p class="login-subtitle" id="login-subtitle">Enter your password to continue.</p>
+    <div class="login-msg" id="login-msg"></div>
+    <div id="login-form-area"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="admin-app">
+  <header>
+    <div class="header-inner">
+      <img src="logo.png" alt="Reminiscing" style="height:30px">
+      <span class="header-title">Admin Panel</span>
+      <div class="header-actions">
+        <span id="unsaved-badge">Unpublished changes</span>
+        <button class="btn btn-publish" id="publish-btn" onclick="publishToGitHub()">Publish to GitHub</button>
+        <button class="btn btn-outline btn-sm" onclick="exportJSON()">Export JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="shows">Shows</button>
+    <button class="tab-btn" data-tab="videos">Videos</button>
+    <button class="tab-btn" data-tab="photos">Photos</button>
+    <button class="tab-btn" data-tab="music">Music</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- SHOWS -->
+    <div class="tab-panel active" id="panel-shows">
+      <div class="panel-header">
+        <h2>Gig Dates</h2>
+        <button class="btn btn-primary" onclick="openModal('gig')">+ Add Show</button>
+      </div>
+      <div id="shows-list"></div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="tab-panel" id="panel-videos">
+      <div class="panel-header">
+        <h2>Videos</h2>
+        <button class="btn btn-primary" onclick="openModal('video')">+ Add Video</button>
+      </div>
+      <div id="videos-list"></div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="tab-panel" id="panel-photos">
+      <div class="panel-header">
+        <h2>Photos</h2>
+        <button class="btn btn-primary" onclick="openModal('photo')">+ Add Photo</button>
+      </div>
+      <div id="photos-list"></div>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="tab-panel" id="panel-music">
+      <div class="panel-header">
+        <h2>Music</h2>
+        <button class="btn btn-primary" onclick="openModal('track')">+ Add Track</button>
+      </div>
+      <div id="music-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel" id="panel-settings">
+
+      <div class="settings-section">
+        <h3>Change Password</h3>
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="s-cur-pwd" placeholder="Current password">
+        </div>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="s-new-pwd" placeholder="New password (min 6 chars)">
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="s-confirm-pwd" placeholder="Confirm new password">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>GitHub Publishing</h3>
+        <p>Configure GitHub API access to publish changes directly to your repository. Your token is stored only in this browser's local storage and never sent anywhere except GitHub's API.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GitHub Username / Org</label>
+            <input type="text" id="gh-owner" placeholder="e.g. your-username">
+          </div>
+          <div class="form-group">
+            <label>Repository Name</label>
+            <input type="text" id="gh-repo" placeholder="e.g. Reminiscing">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Branch</label>
+            <input type="text" id="gh-branch" placeholder="e.g. main">
+          </div>
+          <div class="form-group">
+            <label>Personal Access Token</label>
+            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+          </div>
+        </div>
+        <p class="hint" style="opacity:1">Token needs <strong>Contents</strong> read &amp; write permission. <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--gold)">Create a fine-grained token ↗</a></p>
+        <br>
+        <button class="btn btn-primary" onclick="saveGitHubSettings()">Save GitHub Settings</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Export / Import Data</h3>
+        <p>Download the current data as <code>data.json</code> to manually update your repository, or reload fresh data from the live server.</p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="exportJSON()">Download data.json</button>
+          <button class="btn btn-outline" onclick="loadFromServer()">Reload from server</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div id="modal-overlay" onclick="overlayClick(event)">
+  <div id="modal">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    </div>
+    <form id="modal-form" onsubmit="saveItem(event)">
+      <div id="modal-fields"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────
+  let siteData = null;
+  let editingType = null;
+  let editingId = null;
+  let hasUnsaved = false;
+
+  // ── Password hashing ────────────────────────────────────────
+  async function hashPwd(pwd) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // ── Login ───────────────────────────────────────────────────
+  async function initLogin() {
+    const stored = localStorage.getItem('rm_admin_hash');
+    const area = document.getElementById('login-form-area');
+    if (!stored) {
+      document.getElementById('login-subtitle').textContent = 'Welcome! Create your admin password.';
+      area.innerHTML = `
+        <div class="lfg"><label>New Password</label>
+          <input type="password" id="lf-new" placeholder="Choose a password (min 6 chars)" required></div>
+        <div class="lfg"><label>Confirm Password</label>
+          <input type="password" id="lf-confirm" placeholder="Confirm password" required></div>
+        <button class="btn-login" onclick="createPassword()">Create Password</button>`;
+    } else {
+      area.innerHTML = `
+        <div class="lfg"><label>Password</label>
+          <input type="password" id="lf-pwd" placeholder="Enter your password" required></div>
+        <button class="btn-login" onclick="doLogin()">Login</button>`;
+      setTimeout(() => {
+        const el = document.getElementById('lf-pwd');
+        if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+      }, 50);
+    }
+  }
+
+  async function createPassword() {
+    const pwd = document.getElementById('lf-new').value;
+    const confirm = document.getElementById('lf-confirm').value;
+    if (!pwd || pwd.length < 6) { loginMsg('Password must be at least 6 characters.', 'error'); return; }
+    if (pwd !== confirm) { loginMsg('Passwords do not match.', 'error'); return; }
+    localStorage.setItem('rm_admin_hash', await hashPwd(pwd));
+    loginMsg('Password created! Logging in…', 'success');
+    setTimeout(() => enterApp(), 800);
+  }
+
+  async function doLogin() {
+    const pwd = document.getElementById('lf-pwd').value;
+    if (!pwd) { loginMsg('Please enter your password.', 'error'); return; }
+    const h = await hashPwd(pwd);
+    if (h === localStorage.getItem('rm_admin_hash')) {
+      enterApp();
+    } else {
+      loginMsg('Incorrect password.', 'error');
+    }
+  }
+
+  function loginMsg(msg, type) {
+    const el = document.getElementById('login-msg');
+    el.textContent = msg; el.className = 'login-msg ' + type; el.style.display = 'block';
+  }
+
+  async function enterApp() {
+    await loadData();
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('admin-app').style.display = 'block';
+    loadGitHubSettings();
+    renderAll();
+  }
+
+  function logout() {
+    if (hasUnsaved && !confirm('You have unpublished changes. Logout anyway?')) return;
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('admin-app').style.display = 'none';
+  }
+
+  // ── Data ────────────────────────────────────────────────────
+  async function loadData() {
+    const draft = localStorage.getItem('rm_site_data');
+    if (draft) {
+      siteData = JSON.parse(draft);
+      hasUnsaved = true;
+      updateBadge();
+      return;
+    }
+    await loadFromServer(false);
+  }
+
+  async function loadFromServer(showToastMsg = true) {
+    try {
+      const res = await fetch('data.json?t=' + Date.now());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      siteData = await res.json();
+      localStorage.removeItem('rm_site_data');
+      hasUnsaved = false;
+      updateBadge();
+      if (document.getElementById('admin-app').style.display !== 'none') renderAll();
+      if (showToastMsg) toast('Reloaded fresh data from server.', 'success');
+    } catch (e) {
+      if (!siteData) siteData = { gigs: [], videos: [], photos: [], music: [] };
+      if (showToastMsg) toast('Could not reach server: ' + e.message, 'error');
+    }
+  }
+
+  function saveDraft() {
+    localStorage.setItem('rm_site_data', JSON.stringify(siteData));
+    hasUnsaved = true;
+    updateBadge();
+  }
+
+  function updateBadge() {
+    document.getElementById('unsaved-badge').style.display = hasUnsaved ? 'inline-block' : 'none';
+  }
+
+  // ── Tabs ────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Render ──────────────────────────────────────────────────
+  function renderAll() { renderShows(); renderVideos(); renderPhotos(); renderMusic(); }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderShows() {
+    const c = document.getElementById('shows-list');
+    const gigs = siteData.gigs || [];
+    if (!gigs.length) { c.innerHTML = '<p class="empty-state">No shows added yet.</p>'; return; }
+    c.innerHTML = `<table class="data-table">
+      <thead><tr>
+        <th style="width:36px"></th>
+        <th>Date</th><th>Venue</th><th>Location</th><th>Time</th><th>Tags</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${gigs.map((g, i) => `
+        <tr>
+          <td><div class="order-btns">
+            <button class="order-btn" onclick="moveItem('gigs',${i},-1)" title="Move up">▲</button>
+            <button class="order-btn" onclick="moveItem('gigs',${i},1)" title="Move down">▼</button>
+          </div></td>
+          <td><strong>${esc(g.day)} ${esc(g.month)} ${esc(g.year)}</strong></td>
+          <td>${esc(g.venue)}</td>
+          <td>${esc(g.location)}</td>
+          <td>${esc(g.time)}</td>
+          <td>${(g.tags||[]).map(t=>`<span class="tag-badge">${esc(t)}</span>`).join('')}</td>
+          <td><span class="tag-badge${g.past?' tag-past':''}">${g.past?'Past':'Upcoming'}</span></td>
+          <td class="actions">
+            <button class="btn btn-outline btn-sm" onclick="openModal('gig','${esc(g.id)}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('gigs','${esc(g.id)}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+
+  function renderVideos() {
+    const c = document.getElementById('videos-list');
+    const videos = siteData.videos || [];
+    if (!videos.length) { c.innerHTML = '<p class="empty-state">No videos added yet.</p>'; return; }
+    c.innerHTML = `<table class="data-table">
+      <thead><tr>
+        <th style="width:36px"></th>
+        <th>Title</th><th>Venue</th><th>Date</th><th>YouTube URL</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${videos.map((v, i) => `
+        <tr>
+          <td><div class="order-btns">
+            <button class="order-btn" onclick="moveItem('videos',${i},-1)">▲</button>
+            <button class="order-btn" onclick="moveItem('videos',${i},1)">▼</button>
+          </div></td>
+          <td>${esc(v.title)}</td>
+          <td>${esc(v.venue)}</td>
+          <td>${esc(v.date)}</td>
+          <td>${v.url?`<a href="${esc(v.url)}" target="_blank" style="color:var(--gold)">View ↗</a>`:'<span class="no-url">No URL</span>'}</td>
+          <td class="actions">
+            <button class="btn btn-outline btn-sm" onclick="openModal('video','${esc(v.id)}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('videos','${esc(v.id)}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+
+  function renderPhotos() {
+    const c = document.getElementById('photos-list');
+    const photos = siteData.photos || [];
+    if (!photos.length) { c.innerHTML = '<p class="empty-state">No photos added yet.</p>'; return; }
+    c.innerHTML = `<table class="data-table">
+      <thead><tr>
+        <th style="width:36px"></th>
+        <th style="width:60px">Preview</th>
+        <th>Title</th><th>Caption</th><th>Image URL</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${photos.map((p, i) => `
+        <tr>
+          <td><div class="order-btns">
+            <button class="order-btn" onclick="moveItem('photos',${i},-1)">▲</button>
+            <button class="order-btn" onclick="moveItem('photos',${i},1)">▼</button>
+          </div></td>
+          <td>${p.url?`<img class="thumb-preview" src="${esc(p.url)}" alt="" onerror="this.style.display='none'">`:`<div class="thumb-empty"></div>`}</td>
+          <td>${esc(p.title)}</td>
+          <td>${esc(p.caption)}</td>
+          <td>${p.url?`<a href="${esc(p.url)}" target="_blank" style="color:var(--gold)">View ↗</a>`:'<span class="no-url">No URL</span>'}</td>
+          <td class="actions">
+            <button class="btn btn-outline btn-sm" onclick="openModal('photo','${esc(p.id)}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('photos','${esc(p.id)}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+
+  function renderMusic() {
+    const c = document.getElementById('music-list');
+    const music = siteData.music || [];
+    if (!music.length) { c.innerHTML = '<p class="empty-state">No tracks added yet.</p>'; return; }
+    c.innerHTML = `<table class="data-table">
+      <thead><tr>
+        <th style="width:36px"></th>
+        <th style="width:30px">#</th>
+        <th>Title</th><th>Artist</th><th>Label</th><th>Duration</th><th>Audio URL</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${music.map((t, i) => `
+        <tr>
+          <td><div class="order-btns">
+            <button class="order-btn" onclick="moveItem('music',${i},-1)">▲</button>
+            <button class="order-btn" onclick="moveItem('music',${i},1)">▼</button>
+          </div></td>
+          <td style="color:var(--tan)">${i+1}</td>
+          <td>${esc(t.name)}</td>
+          <td>${esc(t.artist)}</td>
+          <td>${esc(t.label)}</td>
+          <td style="color:var(--tan)">${esc(t.duration)}</td>
+          <td>${t.url?`<a href="${esc(t.url)}" target="_blank" style="color:var(--gold)">Listen ↗</a>`:'<span class="no-url">No URL</span>'}</td>
+          <td class="actions">
+            <button class="btn btn-outline btn-sm" onclick="openModal('track','${esc(t.id)}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('music','${esc(t.id)}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+
+  // ── Modal ───────────────────────────────────────────────────
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function openModal(type, id) {
+    editingType = type; editingId = id || null;
+    const isEdit = !!id;
+    const labels = { gig: 'Show', video: 'Video', photo: 'Photo', track: 'Track' };
+    document.getElementById('modal-title').textContent = (isEdit ? 'Edit ' : 'Add ') + labels[type];
+
+    const arrKey = { gig:'gigs', video:'videos', photo:'photos', track:'music' }[type];
+    const item = isEdit ? (siteData[arrKey]||[]).find(x => x.id === id) : null;
+
+    let html = '';
+    if (type === 'gig') {
+      const v = item || {};
+      html = `
+        <div class="form-row">
+          <div class="form-group"><label>Day *</label>
+            <input type="number" id="f-day" min="1" max="31" value="${esc(v.day||'')}" placeholder="14" required></div>
+          <div class="form-group"><label>Month *</label>
+            <select id="f-month">${MONTHS.map(m=>`<option value="${m}"${v.month===m?' selected':''}>${m}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Year *</label>
+            <input type="number" id="f-year" min="2024" max="2035" value="${esc(v.year||new Date().getFullYear())}" required></div>
+          <div class="form-group"><label>Time</label>
+            <input type="text" id="f-time" value="${esc(v.time||'')}" placeholder="7:00 PM"></div>
+        </div>
+        <div class="form-group"><label>Venue *</label>
+          <input type="text" id="f-venue" value="${esc(v.venue||'')}" placeholder="Venue name" required></div>
+        <div class="form-group"><label>Location</label>
+          <input type="text" id="f-location" value="${esc(v.location||'')}" placeholder="City, State"></div>
+        <div class="form-group"><label>Tags <span style="text-transform:none;font-size:0.72rem">(comma-separated)</span></label>
+          <input type="text" id="f-tags" value="${esc((v.tags||[]).join(', '))}" placeholder="private, vip, festival, corporate">
+          <div class="hint">Common tags: private, vip, festival, corporate, charity, wedding</div></div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none">
+            <input type="checkbox" id="f-past" style="width:auto;accent-color:var(--gold)"${v.past?' checked':''}>
+            Mark as Past Show
+          </label>
+        </div>`;
+    } else if (type === 'video') {
+      const v = item || {};
+      html = `
+        <div class="form-group"><label>Title *</label>
+          <input type="text" id="f-title" value="${esc(v.title||'')}" placeholder="Song — Cover description" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Venue</label>
+            <input type="text" id="f-venue" value="${esc(v.venue||'')}" placeholder="Where filmed"></div>
+          <div class="form-group"><label>Date</label>
+            <input type="text" id="f-date" value="${esc(v.date||'')}" placeholder="June 2024"></div>
+        </div>
+        <div class="form-group"><label>YouTube URL</label>
+          <input type="url" id="f-url" value="${esc(v.url||'')}" placeholder="https://www.youtube.com/watch?v=...">
+          <div class="hint">Paste the full YouTube watch URL. Embed URL is generated automatically.</div></div>`;
+    } else if (type === 'photo') {
+      const v = item || {};
+      html = `
+        <div class="form-group"><label>Title *</label>
+          <input type="text" id="f-title" value="${esc(v.title||'')}" placeholder="Descriptive title" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Caption</label>
+            <input type="text" id="f-caption" value="${esc(v.caption||'')}" placeholder="Short caption for display"></div>
+          <div class="form-group"><label>Date</label>
+            <input type="text" id="f-date" value="${esc(v.date||'')}" placeholder="2024"></div>
+        </div>
+        <div class="form-group"><label>Image URL</label>
+          <input type="url" id="f-url" value="${esc(v.url||'')}" placeholder="https://...">
+          <div class="hint">Direct link to hosted image (Imgur, Dropbox public link, etc.)</div></div>`;
+    } else if (type === 'track') {
+      const v = item || {};
+      html = `
+        <div class="form-group"><label>Song Title *</label>
+          <input type="text" id="f-name" value="${esc(v.name||'')}" placeholder="Song title" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Original Artist *</label>
+            <input type="text" id="f-artist" value="${esc(v.artist||'')}" placeholder="Original artist" required></div>
+          <div class="form-group"><label>Label</label>
+            <input type="text" id="f-label" value="${esc(v.label||'')}" placeholder="Live Recording"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Duration</label>
+            <input type="text" id="f-duration" value="${esc(v.duration||'')}" placeholder="3:45"></div>
+          <div class="form-group"><label>Audio URL</label>
+            <input type="url" id="f-url" value="${esc(v.url||'')}" placeholder="https://..."></div>
+        </div>`;
+    }
+
+    document.getElementById('modal-fields').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('open');
+    // Focus first input
+    setTimeout(() => { const f = document.querySelector('#modal-fields input'); if (f) f.focus(); }, 60);
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    editingType = null; editingId = null;
+  }
+
+  function overlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+  function saveItem(e) {
+    e.preventDefault();
+    const type = editingType;
+    const isEdit = !!editingId;
+    const arrKey = { gig:'gigs', video:'videos', photo:'photos', track:'music' }[type];
+    let item = {};
+
+    if (type === 'gig') {
+      item = {
+        id: editingId || genId('gig'),
+        day: String(document.getElementById('f-day').value).padStart(2,'0'),
+        month: document.getElementById('f-month').value,
+        year: String(document.getElementById('f-year').value),
+        venue: document.getElementById('f-venue').value,
+        location: document.getElementById('f-location').value,
+        time: document.getElementById('f-time').value,
+        tags: document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+        past: document.getElementById('f-past').checked
+      };
+    } else if (type === 'video') {
+      const url = document.getElementById('f-url').value;
+      item = {
+        id: editingId || genId('vid'),
+        title: document.getElementById('f-title').value,
+        venue: document.getElementById('f-venue').value,
+        date: document.getElementById('f-date').value,
+        url: url,
+        embedUrl: ytToEmbed(url)
+      };
+    } else if (type === 'photo') {
+      item = {
+        id: editingId || genId('photo'),
+        title: document.getElementById('f-title').value,
+        caption: document.getElementById('f-caption').value,
+        date: document.getElementById('f-date').value,
+        url: document.getElementById('f-url').value
+      };
+    } else if (type === 'track') {
+      item = {
+        id: editingId || genId('track'),
+        name: document.getElementById('f-name').value,
+        artist: document.getElementById('f-artist').value,
+        label: document.getElementById('f-label').value,
+        duration: document.getElementById('f-duration').value,
+        url: document.getElementById('f-url').value
+      };
+    }
+
+    if (isEdit) {
+      const idx = siteData[arrKey].findIndex(x => x.id === editingId);
+      if (idx >= 0) siteData[arrKey][idx] = item;
+    } else {
+      siteData[arrKey].push(item);
+    }
+
+    saveDraft();
+    closeModal();
+    renderAll();
+    toast((isEdit ? 'Updated' : 'Added') + '! Remember to publish when done.', 'success');
+  }
+
+  function deleteItem(arrKey, id) {
+    const label = { gigs:'show', videos:'video', photos:'photo', music:'track' }[arrKey];
+    if (!confirm('Delete this ' + label + '?')) return;
+    siteData[arrKey] = siteData[arrKey].filter(x => x.id !== id);
+    saveDraft(); renderAll();
+    toast('Deleted. Remember to publish!', 'success');
+  }
+
+  function moveItem(arrKey, idx, dir) {
+    const arr = siteData[arrKey];
+    const ni = idx + dir;
+    if (ni < 0 || ni >= arr.length) return;
+    [arr[idx], arr[ni]] = [arr[ni], arr[idx]];
+    saveDraft(); renderAll();
+  }
+
+  // ── GitHub ──────────────────────────────────────────────────
+  function loadGitHubSettings() {
+    const s = JSON.parse(localStorage.getItem('rm_gh') || '{}');
+    if (s.owner) document.getElementById('gh-owner').value = s.owner;
+    if (s.repo)  document.getElementById('gh-repo').value  = s.repo;
+    if (s.branch) document.getElementById('gh-branch').value = s.branch;
+    if (s.token) document.getElementById('gh-token').value = s.token;
+  }
+
+  function saveGitHubSettings() {
+    const s = {
+      owner:  document.getElementById('gh-owner').value.trim(),
+      repo:   document.getElementById('gh-repo').value.trim(),
+      branch: document.getElementById('gh-branch').value.trim(),
+      token:  document.getElementById('gh-token').value.trim()
+    };
+    if (!s.owner || !s.repo || !s.branch || !s.token) {
+      toast('Please fill in all GitHub settings fields.', 'error'); return;
+    }
+    localStorage.setItem('rm_gh', JSON.stringify(s));
+    toast('GitHub settings saved.', 'success');
+  }
+
+  async function publishToGitHub() {
+    const s = JSON.parse(localStorage.getItem('rm_gh') || '{}');
+    if (!s.owner || !s.repo || !s.branch || !s.token) {
+      toast('Configure GitHub settings first (Settings tab).', 'error'); return;
+    }
+    const btn = document.getElementById('publish-btn');
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    try {
+      const apiUrl = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/data.json`;
+      const headers = { 'Authorization': 'token ' + s.token, 'Accept': 'application/vnd.github+json' };
+
+      // Get current SHA
+      let sha = null;
+      const getRes = await fetch(apiUrl + '?ref=' + s.branch, { headers });
+      if (getRes.ok) { sha = (await getRes.json()).sha; }
+
+      // Encode content
+      const content = JSON.stringify(siteData, null, 2);
+      const encoded = btoa(unescape(encodeURIComponent(content)));
+
+      const body = { message: 'Update site data via admin panel', content: encoded, branch: s.branch };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || 'GitHub API error'); }
+
+      localStorage.removeItem('rm_site_data');
+      hasUnsaved = false; updateBadge();
+      toast('Published! Changes will be live in ~1 minute.', 'success');
+    } catch (e) {
+      toast('Publish failed: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Publish to GitHub';
+    }
+  }
+
+  // ── Change Password ─────────────────────────────────────────
+  async function changePassword() {
+    const cur = document.getElementById('s-cur-pwd').value;
+    const nw  = document.getElementById('s-new-pwd').value;
+    const cf  = document.getElementById('s-confirm-pwd').value;
+    if (await hashPwd(cur) !== localStorage.getItem('rm_admin_hash')) {
+      toast('Current password is incorrect.', 'error'); return;
+    }
+    if (!nw || nw.length < 6) { toast('New password must be at least 6 characters.', 'error'); return; }
+    if (nw !== cf) { toast('New passwords do not match.', 'error'); return; }
+    localStorage.setItem('rm_admin_hash', await hashPwd(nw));
+    document.getElementById('s-cur-pwd').value = '';
+    document.getElementById('s-new-pwd').value = '';
+    document.getElementById('s-confirm-pwd').value = '';
+    toast('Password updated!', 'success');
+  }
+
+  // ── Export ──────────────────────────────────────────────────
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(siteData, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'data.json'; a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Utilities ───────────────────────────────────────────────
+  function genId(prefix) { return prefix + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,6); }
+
+  function ytToEmbed(url) {
+    if (!url) return '';
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    return m ? 'https://www.youtube.com/embed/' + m[1] : '';
+  }
+
+  function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.className = 'show ' + (type || '');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = ''; }, 3500);
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Boot ────────────────────────────────────────────────────
+  initLogin();
+</script>
+</body>
+</html>
