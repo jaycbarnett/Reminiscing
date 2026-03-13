@@ -440,13 +440,16 @@
   async function initLogin() {
     // Fetch current password hash from the server (admin-config.json)
     try {
-      const res = await fetch('admin-config.json?t=' + Date.now());
+      const res = await fetch('admin-config.json', { cache: 'no-store' });
       if (res.ok) {
         const cfg = await res.json();
         configHash = cfg.passwordHash || null;
         serverGH = cfg.github || {};
       }
     } catch { /* fall back to DEFAULT_HASH */ }
+    // If a password was just changed, use that hash until the deploy propagates
+    const recentChange = sessionStorage.getItem('rm_pw_change');
+    if (recentChange) configHash = recentChange;
 
     const area = document.getElementById('login-form-area');
     area.innerHTML = `
@@ -466,6 +469,7 @@
     const pwd = document.getElementById('lf-pwd').value;
     if (!pwd) { loginMsg('Please enter your password.', 'error'); return; }
     if (await hashPwd(pwd) === effectiveHash()) {
+      sessionStorage.removeItem('rm_pw_change');
       enterApp();
     } else {
       loginMsg('Incorrect password.', 'error');
@@ -973,6 +977,7 @@
       if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || 'GitHub API error'); }
 
       configHash = newHash; // take effect immediately for this session
+      sessionStorage.setItem('rm_pw_change', newHash); // survive page refreshes during deploy
       document.getElementById('s-cur-pwd').value = '';
       document.getElementById('s-new-pwd').value = '';
       document.getElementById('s-confirm-pwd').value = '';
