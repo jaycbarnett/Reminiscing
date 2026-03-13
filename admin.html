@@ -336,9 +336,10 @@
 
       <div class="settings-section">
         <h3>Change Password</h3>
+        <p>The built-in default password is <code>admin</code>. Setting a custom password here stores it in <em>this browser only</em>. On any new browser or device the default password will still work, so change it here after each new login.</p>
         <div class="form-group">
           <label>Current Password</label>
-          <input type="password" id="s-cur-pwd" placeholder="Current password">
+          <input type="password" id="s-cur-pwd" placeholder="Current password (or default: admin)">
         </div>
         <div class="form-group">
           <label>New Password</label>
@@ -418,6 +419,7 @@
   let editingType = null;
   let editingId = null;
   let hasUnsaved = false;
+  let configHash = null; // loaded from admin-config.json
 
   // ── Password hashing ────────────────────────────────────────
   async function hashPwd(pwd) {
@@ -425,45 +427,43 @@
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  // ── Login ───────────────────────────────────────────────────
-  async function initLogin() {
-    const stored = localStorage.getItem('rm_admin_hash');
-    const area = document.getElementById('login-form-area');
-    if (!stored) {
-      document.getElementById('login-subtitle').textContent = 'Welcome! Create your admin password.';
-      area.innerHTML = `
-        <div class="lfg"><label>New Password</label>
-          <input type="password" id="lf-new" placeholder="Choose a password (min 6 chars)" required></div>
-        <div class="lfg"><label>Confirm Password</label>
-          <input type="password" id="lf-confirm" placeholder="Confirm password" required></div>
-        <button class="btn-login" onclick="createPassword()">Create Password</button>`;
-    } else {
-      area.innerHTML = `
-        <div class="lfg"><label>Password</label>
-          <input type="password" id="lf-pwd" placeholder="Enter your password" required></div>
-        <button class="btn-login" onclick="doLogin()">Login</button>`;
-      setTimeout(() => {
-        const el = document.getElementById('lf-pwd');
-        if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-      }, 50);
-    }
+  // Default password hash — SHA-256 of "admin"
+  // Change via Settings tab; custom hash is stored per-browser in localStorage.
+  const DEFAULT_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+
+  function effectiveHash() {
+    return configHash || DEFAULT_HASH;
   }
 
-  async function createPassword() {
-    const pwd = document.getElementById('lf-new').value;
-    const confirm = document.getElementById('lf-confirm').value;
-    if (!pwd || pwd.length < 6) { loginMsg('Password must be at least 6 characters.', 'error'); return; }
-    if (pwd !== confirm) { loginMsg('Passwords do not match.', 'error'); return; }
-    localStorage.setItem('rm_admin_hash', await hashPwd(pwd));
-    loginMsg('Password created! Logging in…', 'success');
-    setTimeout(() => enterApp(), 800);
+  // ── Login ───────────────────────────────────────────────────
+  async function initLogin() {
+    // Fetch current password hash from the server (admin-config.json)
+    try {
+      const res = await fetch('admin-config.json?t=' + Date.now());
+      if (res.ok) {
+        const cfg = await res.json();
+        configHash = cfg.passwordHash || null;
+      }
+    } catch { /* fall back to DEFAULT_HASH */ }
+
+    const area = document.getElementById('login-form-area');
+    area.innerHTML = `
+      <div class="lfg"><label>Password</label>
+        <input type="password" id="lf-pwd" placeholder="Enter your password" required></div>
+      <button class="btn-login" onclick="doLogin()">Login</button>
+      <p style="margin-top:0.9rem;font-size:0.75rem;color:var(--tan);opacity:0.8">
+        Default password: <strong style="color:var(--cream)">admin</strong>
+      </p>`;
+    setTimeout(() => {
+      const el = document.getElementById('lf-pwd');
+      if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    }, 50);
   }
 
   async function doLogin() {
     const pwd = document.getElementById('lf-pwd').value;
     if (!pwd) { loginMsg('Please enter your password.', 'error'); return; }
-    const h = await hashPwd(pwd);
-    if (h === localStorage.getItem('rm_admin_hash')) {
+    if (await hashPwd(pwd) === effectiveHash()) {
       enterApp();
     } else {
       loginMsg('Incorrect password.', 'error');
@@ -903,7 +903,7 @@
     const cur = document.getElementById('s-cur-pwd').value;
     const nw  = document.getElementById('s-new-pwd').value;
     const cf  = document.getElementById('s-confirm-pwd').value;
-    if (await hashPwd(cur) !== localStorage.getItem('rm_admin_hash')) {
+    if (await hashPwd(cur) !== effectiveHash()) {
       toast('Current password is incorrect.', 'error'); return;
     }
     if (!nw || nw.length < 6) { toast('New password must be at least 6 characters.', 'error'); return; }
