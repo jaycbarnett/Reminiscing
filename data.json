@@ -51,17 +51,6 @@
         "private"
       ],
       "past": false
-    },
-    {
-      "id": "gig-1773360571086-dd13",
-      "day": "14",
-      "month": "Jan",
-      "year": "2026",
-      "venue": "Test Venue 2",
-      "location": "Lakeland, FL",
-      "time": "",
-      "tags": [],
-      "past": true
     }
   ],
   "videos": [
