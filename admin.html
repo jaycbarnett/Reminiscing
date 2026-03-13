@@ -336,10 +336,10 @@
 
       <div class="settings-section">
         <h3>Change Password</h3>
-        <p>The built-in default password is <code>admin</code>. Setting a custom password here stores it in <em>this browser only</em>. On any new browser or device the default password will still work, so change it here after each new login.</p>
+        <p>The password is stored in <code>admin-config.json</code> in your repository, so a change takes effect on every browser immediately. GitHub settings must be configured below before you can change it. The factory default is <code>admin</code>.</p>
         <div class="form-group">
           <label>Current Password</label>
-          <input type="password" id="s-cur-pwd" placeholder="Current password (or default: admin)">
+          <input type="password" id="s-cur-pwd" placeholder="Current password">
         </div>
         <div class="form-group">
           <label>New Password</label>
@@ -354,7 +354,7 @@
 
       <div class="settings-section">
         <h3>GitHub Publishing</h3>
-        <p>Configure GitHub API access to publish changes directly to your repository. Your token is stored only in this browser's local storage and never sent anywhere except GitHub's API.</p>
+        <p>Owner, repo, and branch are saved to <code>admin-config.json</code> and auto-filled on every device. Your <strong>token</strong> is stored only in this browser's localStorage and never committed to any file.</p>
         <div class="form-row">
           <div class="form-group">
             <label>GitHub Username / Org</label>
@@ -420,6 +420,7 @@
   let editingId = null;
   let hasUnsaved = false;
   let configHash = null; // loaded from admin-config.json
+  let serverGH = {};    // owner/repo/branch loaded from admin-config.json
 
   // ── Password hashing ────────────────────────────────────────
   async function hashPwd(pwd) {
@@ -443,6 +444,7 @@
       if (res.ok) {
         const cfg = await res.json();
         configHash = cfg.passwordHash || null;
+        serverGH = cfg.github || {};
       }
     } catch { /* fall back to DEFAULT_HASH */ }
 
@@ -838,25 +840,57 @@
 
   // ── GitHub ──────────────────────────────────────────────────
   function loadGitHubSettings() {
-    const s = JSON.parse(localStorage.getItem('rm_gh') || '{}');
-    if (s.owner) document.getElementById('gh-owner').value = s.owner;
-    if (s.repo)  document.getElementById('gh-repo').value  = s.repo;
-    if (s.branch) document.getElementById('gh-branch').value = s.branch;
-    if (s.token) document.getElementById('gh-token').value = s.token;
+    const local = JSON.parse(localStorage.getItem('rm_gh') || '{}');
+    // owner/repo/branch: prefer server config, fall back to local cache
+    document.getElementById('gh-owner').value  = serverGH.owner  || local.owner  || '';
+    document.getElementById('gh-repo').value   = serverGH.repo   || local.repo   || '';
+    document.getElementById('gh-branch').value = serverGH.branch || local.branch || '';
+    // token: localStorage only — never stored in a served file
+    document.getElementById('gh-token').value  = local.token || '';
   }
 
-  function saveGitHubSettings() {
-    const s = {
-      owner:  document.getElementById('gh-owner').value.trim(),
-      repo:   document.getElementById('gh-repo').value.trim(),
-      branch: document.getElementById('gh-branch').value.trim(),
-      token:  document.getElementById('gh-token').value.trim()
-    };
-    if (!s.owner || !s.repo || !s.branch || !s.token) {
+  async function saveGitHubSettings() {
+    const owner  = document.getElementById('gh-owner').value.trim();
+    const repo   = document.getElementById('gh-repo').value.trim();
+    const branch = document.getElementById('gh-branch').value.trim();
+    const token  = document.getElementById('gh-token').value.trim();
+
+    if (!owner || !repo || !branch || !token) {
       toast('Please fill in all GitHub settings fields.', 'error'); return;
     }
-    localStorage.setItem('rm_gh', JSON.stringify(s));
-    toast('GitHub settings saved.', 'success');
+
+    // Always save all four locally for this browser (token stays local-only)
+    localStorage.setItem('rm_gh', JSON.stringify({ owner, repo, branch, token }));
+
+    // Publish owner/repo/branch (not token) to admin-config.json
+    const savBtn = document.querySelector('#panel-settings .settings-section:nth-child(2) .btn-primary');
+    if (savBtn) { savBtn.disabled = true; savBtn.textContent = 'Saving…'; }
+    try {
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/admin-config.json`;
+      const headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' };
+
+      let sha = null;
+      const getRes = await fetch(apiUrl + '?ref=' + branch, { headers });
+      if (getRes.ok) { sha = (await getRes.json()).sha; }
+
+      const newCfg = { passwordHash: configHash || DEFAULT_HASH, github: { owner, repo, branch } };
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(newCfg, null, 2))));
+      const body = { message: 'Update GitHub settings in admin config', content: encoded, branch };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message); }
+
+      serverGH = { owner, repo, branch };
+      toast('GitHub settings saved — owner/repo/branch will be pre-filled on all devices.', 'success');
+    } catch (e) {
+      toast('Token saved locally, but could not publish to admin-config.json: ' + e.message, 'error');
+    } finally {
+      if (savBtn) { savBtn.disabled = false; savBtn.textContent = 'Save GitHub Settings'; }
+    }
   }
 
   async function publishToGitHub() {
@@ -903,16 +937,51 @@
     const cur = document.getElementById('s-cur-pwd').value;
     const nw  = document.getElementById('s-new-pwd').value;
     const cf  = document.getElementById('s-confirm-pwd').value;
+
     if (await hashPwd(cur) !== effectiveHash()) {
       toast('Current password is incorrect.', 'error'); return;
     }
     if (!nw || nw.length < 6) { toast('New password must be at least 6 characters.', 'error'); return; }
     if (nw !== cf) { toast('New passwords do not match.', 'error'); return; }
-    localStorage.setItem('rm_admin_hash', await hashPwd(nw));
-    document.getElementById('s-cur-pwd').value = '';
-    document.getElementById('s-new-pwd').value = '';
-    document.getElementById('s-confirm-pwd').value = '';
-    toast('Password updated!', 'success');
+
+    const s = JSON.parse(localStorage.getItem('rm_gh') || '{}');
+    if (!s.owner || !s.repo || !s.branch || !s.token) {
+      toast('Configure GitHub settings first — the password is stored in admin-config.json.', 'error');
+      return;
+    }
+
+    const btn = document.querySelector('#panel-settings .btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+    try {
+      const newHash = await hashPwd(nw);
+      const apiUrl = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/admin-config.json`;
+      const headers = { 'Authorization': 'token ' + s.token, 'Accept': 'application/vnd.github+json' };
+
+      let sha = null;
+      const getRes = await fetch(apiUrl + '?ref=' + s.branch, { headers });
+      if (getRes.ok) { sha = (await getRes.json()).sha; }
+
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ passwordHash: newHash, github: serverGH }, null, 2))));
+      const body = { message: 'Update admin password', content: encoded, branch: s.branch };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || 'GitHub API error'); }
+
+      configHash = newHash; // take effect immediately for this session
+      document.getElementById('s-cur-pwd').value = '';
+      document.getElementById('s-new-pwd').value = '';
+      document.getElementById('s-confirm-pwd').value = '';
+      toast('Password updated and published — effective on all browsers.', 'success');
+    } catch (e) {
+      toast('Failed to save password: ' + e.message, 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+    }
   }
 
   // ── Export ──────────────────────────────────────────────────
