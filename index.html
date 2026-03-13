@@ -917,30 +917,16 @@
     <div class="divider"></div>
 
     <div class="media-tabs">
-      <button class="media-tab active" data-tab="photos">Photos</button>
+      <button class="media-tab active" data-tab="music">Music</button>
+      <button class="media-tab" data-tab="photos">Photos</button>
       <button class="media-tab" data-tab="videos">Videos</button>
-      <button class="media-tab" data-tab="music">Music</button>
-    </div>
-
-    <!-- PHOTOS -->
-    <div class="media-panel active" id="tab-photos">
-      <div class="photo-grid" id="photo-grid">
-      </div>
-    </div>
-
-    <!-- VIDEOS -->
-    <div class="media-panel" id="tab-videos">
-      <div class="video-grid" id="video-grid"></div>
-      <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--tan);">
-        &#9654; Subscribe on <a href="#" style="color:var(--gold);">YouTube</a> for full show recordings.
-      </p>
     </div>
 
     <!-- MUSIC -->
-    <div class="media-panel" id="tab-music">
+    <div class="media-panel active" id="tab-music">
       <div class="tracks-list" id="tracks-list"></div>
 
-      <!-- Simulated player UI -->
+      <!-- Audio player UI -->
       <div class="player-bar" id="player-bar">
         <div class="player-top">
           <div class="player-title" id="player-title">—</div>
@@ -960,10 +946,21 @@
         <div class="progress-bar" onclick="seekTrack(event)">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
-        <p style="font-size:0.72rem;color:var(--tan);margin-top:0.5rem;font-style:italic;">
-          Demo player — connect your audio files or streaming links to enable playback.
-        </p>
       </div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="media-panel" id="tab-photos">
+      <div class="photo-grid" id="photo-grid">
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="media-panel" id="tab-videos">
+      <div class="video-grid" id="video-grid"></div>
+      <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--tan);">
+        &#9654; Subscribe on <a href="#" style="color:var(--gold);">YouTube</a> for full show recordings.
+      </p>
     </div>
   </div>
 </section>
@@ -1295,62 +1292,64 @@
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-  /* ── Simulated audio player ── */
+  /* ── Real HTML5 audio player ── */
   let trackData = [];
   let currentTrack = -1;
-  let isPlaying = false;
-  let progressInterval = null;
-  let progress = 0;
+
+  const audio = new Audio();
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  });
+
+  audio.addEventListener('ended', () => nextTrack());
+  audio.addEventListener('play',  () => setPlayState(true));
+  audio.addEventListener('pause', () => setPlayState(false));
 
   function playTrack(el, idx) {
     document.querySelectorAll('.track').forEach(t => t.classList.remove('playing'));
     el.classList.add('playing');
     currentTrack = idx;
-    isPlaying = true;
-    progress = 0;
+    const t = trackData[idx];
     document.getElementById('player-bar').classList.add('visible');
-    document.getElementById('player-title').textContent =
-      trackData[idx].name + ' — ' + trackData[idx].artist;
-    setPlayState(true);
-    startProgress();
+    document.getElementById('player-title').textContent = t.name + ' — ' + t.artist;
+    if (t.url) {
+      audio.src = t.url;
+      audio.currentTime = 0;
+      audio.play();
+    } else {
+      setPlayState(false);
+    }
   }
 
   function setPlayState(playing) {
-    document.getElementById('play-icon').style.display = playing ? 'none' : 'block';
+    document.getElementById('play-icon').style.display  = playing ? 'none'  : 'block';
     document.getElementById('pause-icon').style.display = playing ? 'block' : 'none';
   }
 
   function togglePlay() {
-    isPlaying = !isPlaying;
-    setPlayState(isPlaying);
-    if (isPlaying) startProgress(); else clearInterval(progressInterval);
-  }
-
-  function startProgress() {
-    clearInterval(progressInterval);
-    progressInterval = setInterval(() => {
-      progress = Math.min(progress + 0.4, 100);
-      document.getElementById('progress-fill').style.width = progress + '%';
-      if (progress >= 100) { clearInterval(progressInterval); nextTrack(); }
-    }, 200);
+    if (audio.paused) audio.play(); else audio.pause();
   }
 
   function seekTrack(e) {
+    if (!audio.duration) return;
     const bar = e.currentTarget;
-    progress = (e.offsetX / bar.offsetWidth) * 100;
-    document.getElementById('progress-fill').style.width = progress + '%';
+    audio.currentTime = (e.offsetX / bar.offsetWidth) * audio.duration;
   }
 
   function nextTrack() {
     const next = (currentTrack + 1) % trackData.length;
     const el = document.querySelectorAll('.track')[next];
-    playTrack(el, next);
+    if (el) playTrack(el, next);
   }
 
   function prevTrack() {
+    if (audio.currentTime > 3) { audio.currentTime = 0; return; }
     const prev = (currentTrack - 1 + trackData.length) % trackData.length;
     const el = document.querySelectorAll('.track')[prev];
-    playTrack(el, prev);
+    if (el) playTrack(el, prev);
   }
 
   /* ── Gig Calendar ── */
