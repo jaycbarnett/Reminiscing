@@ -112,44 +112,52 @@
   ],
   "music": [
     {
+      "id": "track-2",
+      "name": "Sailing",
+      "artist": "Christopher Cross",
+      "label": "Live Recording",
+      "duration": "1:51",
+      "url": "https://reminiscing.band/audio/sailing.mp3"
+    },
+    {
+      "id": "track-1773434874556-h7kz",
+      "name": "Reminiscing",
+      "artist": "Little River Band",
+      "label": "Live Recording",
+      "duration": "2:04",
+      "url": "https://reminiscing.band/audio/reminiscing.mp3"
+    },
+    {
+      "id": "track-3",
+      "name": "Baker Street",
+      "artist": "Gerry Rafferty",
+      "label": "Live Recording",
+      "duration": "2:01",
+      "url": "https://reminiscing.band/audio/baker-street.mp3"
+    },
+    {
+      "id": "track-4",
+      "name": "Easy",
+      "artist": "Commodores",
+      "label": "Live Recording",
+      "duration": "1:23",
+      "url": "https://reminiscing.band/audio/easy.mp3"
+    },
+    {
       "id": "track-1",
       "name": "Ride Like the Wind",
       "artist": "Christopher Cross",
       "label": "Live Recording",
-      "duration": "4:12",
-      "url": ""
-    },
-    {
-      "id": "track-2",
-      "name": "Peg",
-      "artist": "Steely Dan",
-      "label": "Studio Demo",
-      "duration": "3:54",
-      "url": ""
-    },
-    {
-      "id": "track-3",
-      "name": "Footloose",
-      "artist": "Kenny Loggins",
-      "label": "Live Recording",
-      "duration": "3:47",
-      "url": ""
-    },
-    {
-      "id": "track-4",
-      "name": "Sara Smile",
-      "artist": "Hall & Oates",
-      "label": "Live Recording",
-      "duration": "4:05",
-      "url": ""
+      "duration": "1:11",
+      "url": "https://reminiscing.band/audio/ride-like-the-wind.mp3"
     },
     {
       "id": "track-5",
-      "name": "Steal Away",
-      "artist": "Robbie Dupree",
-      "label": "Studio Demo",
-      "duration": "4:33",
-      "url": ""
+      "name": "Escape",
+      "artist": "Rupert Holmes",
+      "label": "Live Recording",
+      "duration": "1:15",
+      "url": "https://reminiscing.band/audio/escape.mp3"
     }
   ]
 }
