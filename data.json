@@ -1,27 +1,168 @@
 {
   "gigs": [
-    { "id": "gig-1", "day": "11", "month": "Oct", "year": "2025", "venue": "Private Estate Celebration", "location": "Windermere, FL", "time": "7:00 PM", "tags": ["private"], "past": true },
-    { "id": "gig-2", "day": "13", "month": "Dec", "year": "2025", "venue": "Holiday Private Gala", "location": "Winter Park, FL", "time": "6:30 PM", "tags": ["private"], "past": true },
-    { "id": "gig-3", "day": "21", "month": "Feb", "year": "2026", "venue": "Private Birthday Party", "location": "Lake Mary, FL", "time": "7:30 PM", "tags": ["private"], "past": true }
+    {
+      "id": "gig-1",
+      "day": "11",
+      "month": "Oct",
+      "year": "2025",
+      "venue": "Private Estate Celebration",
+      "location": "Windermere, FL",
+      "time": "7:00 PM",
+      "tags": [
+        "private"
+      ],
+      "past": true
+    },
+    {
+      "id": "gig-2",
+      "day": "13",
+      "month": "Dec",
+      "year": "2025",
+      "venue": "Holiday Private Gala",
+      "location": "Winter Park, FL",
+      "time": "6:30 PM",
+      "tags": [
+        "private"
+      ],
+      "past": true
+    },
+    {
+      "id": "gig-3",
+      "day": "21",
+      "month": "Feb",
+      "year": "2026",
+      "venue": "Private Birthday Party",
+      "location": "Lake Mary, FL",
+      "time": "7:30 PM",
+      "tags": [
+        "private"
+      ],
+      "past": true
+    },
+    {
+      "id": "gig-1773360432355-oory",
+      "day": "14",
+      "month": "Jan",
+      "year": "2026",
+      "venue": "Test Venue",
+      "location": "Orlando, FL",
+      "time": "",
+      "tags": [
+        "private"
+      ],
+      "past": false
+    }
   ],
   "videos": [
-    { "id": "vid-1", "title": "Sailing (Christopher Cross) \u2014 Live", "venue": "Harbor Jazz Festival", "date": "June 2024", "url": "", "embedUrl": "" },
-    { "id": "vid-2", "title": "What a Fool Believes \u2014 Live", "venue": "Bayside Amphitheater", "date": "Aug 2024", "url": "", "embedUrl": "" },
-    { "id": "vid-3", "title": "Reelin\u2019 In the Years \u2014 Acoustic Set", "venue": "Rooftop Sessions", "date": "Mar 2024", "url": "", "embedUrl": "" }
+    {
+      "id": "vid-1",
+      "title": "Sailing (Christopher Cross) — Live",
+      "venue": "Harbor Jazz Festival",
+      "date": "June 2024",
+      "url": "",
+      "embedUrl": ""
+    },
+    {
+      "id": "vid-2",
+      "title": "What a Fool Believes — Live",
+      "venue": "Bayside Amphitheater",
+      "date": "Aug 2024",
+      "url": "",
+      "embedUrl": ""
+    },
+    {
+      "id": "vid-3",
+      "title": "Reelin’ In the Years — Acoustic Set",
+      "venue": "Rooftop Sessions",
+      "date": "Mar 2024",
+      "url": "",
+      "embedUrl": ""
+    }
   ],
   "photos": [
-    { "id": "photo-1", "title": "Live at the Bayside Amphitheater", "date": "2024", "url": "", "caption": "Live @ Bayside Amphitheater" },
-    { "id": "photo-2", "title": "Studio Session", "date": "2023", "url": "", "caption": "Studio Session 2023" },
-    { "id": "photo-3", "title": "Harbor Festival Main Stage", "date": "2024", "url": "", "caption": "Harbor Festival Main Stage" },
-    { "id": "photo-4", "title": "Private Charter \u2014 S/V Lady Jane", "date": "2024", "url": "", "caption": "Private Charter \u2014 S/V Lady Jane" },
-    { "id": "photo-5", "title": "Soundcheck Blues", "date": "2024", "url": "", "caption": "Soundcheck Blues" },
-    { "id": "photo-6", "title": "Rooftop Sessions", "date": "2024", "url": "", "caption": "Rooftop Sessions 2024" }
+    {
+      "id": "photo-1",
+      "title": "Live at the Bayside Amphitheater",
+      "date": "2024",
+      "url": "",
+      "caption": "Live @ Bayside Amphitheater"
+    },
+    {
+      "id": "photo-2",
+      "title": "Studio Session",
+      "date": "2023",
+      "url": "",
+      "caption": "Studio Session 2023"
+    },
+    {
+      "id": "photo-3",
+      "title": "Harbor Festival Main Stage",
+      "date": "2024",
+      "url": "",
+      "caption": "Harbor Festival Main Stage"
+    },
+    {
+      "id": "photo-4",
+      "title": "Private Charter — S/V Lady Jane",
+      "date": "2024",
+      "url": "",
+      "caption": "Private Charter — S/V Lady Jane"
+    },
+    {
+      "id": "photo-5",
+      "title": "Soundcheck Blues",
+      "date": "2024",
+      "url": "",
+      "caption": "Soundcheck Blues"
+    },
+    {
+      "id": "photo-6",
+      "title": "Rooftop Sessions",
+      "date": "2024",
+      "url": "",
+      "caption": "Rooftop Sessions 2024"
+    }
   ],
   "music": [
-    { "id": "track-1", "name": "Ride Like the Wind", "artist": "Christopher Cross", "label": "Live Recording", "duration": "4:12", "url": "" },
-    { "id": "track-2", "name": "Peg", "artist": "Steely Dan", "label": "Studio Demo", "duration": "3:54", "url": "" },
-    { "id": "track-3", "name": "Footloose", "artist": "Kenny Loggins", "label": "Live Recording", "duration": "3:47", "url": "" },
-    { "id": "track-4", "name": "Sara Smile", "artist": "Hall & Oates", "label": "Live Recording", "duration": "4:05", "url": "" },
-    { "id": "track-5", "name": "Steal Away", "artist": "Robbie Dupree", "label": "Studio Demo", "duration": "4:33", "url": "" }
+    {
+      "id": "track-1",
+      "name": "Ride Like the Wind",
+      "artist": "Christopher Cross",
+      "label": "Live Recording",
+      "duration": "4:12",
+      "url": ""
+    },
+    {
+      "id": "track-2",
+      "name": "Peg",
+      "artist": "Steely Dan",
+      "label": "Studio Demo",
+      "duration": "3:54",
+      "url": ""
+    },
+    {
+      "id": "track-3",
+      "name": "Footloose",
+      "artist": "Kenny Loggins",
+      "label": "Live Recording",
+      "duration": "3:47",
+      "url": ""
+    },
+    {
+      "id": "track-4",
+      "name": "Sara Smile",
+      "artist": "Hall & Oates",
+      "label": "Live Recording",
+      "duration": "4:05",
+      "url": ""
+    },
+    {
+      "id": "track-5",
+      "name": "Steal Away",
+      "artist": "Robbie Dupree",
+      "label": "Studio Demo",
+      "duration": "4:33",
+      "url": ""
+    }
   ]
 }
