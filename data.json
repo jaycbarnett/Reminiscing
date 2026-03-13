@@ -38,19 +38,6 @@
         "private"
       ],
       "past": true
-    },
-    {
-      "id": "gig-1773360432355-oory",
-      "day": "14",
-      "month": "Jan",
-      "year": "2026",
-      "venue": "Test Venue",
-      "location": "Orlando, FL",
-      "time": "",
-      "tags": [
-        "private"
-      ],
-      "past": false
     }
   ],
   "videos": [
