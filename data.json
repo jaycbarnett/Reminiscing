@@ -51,6 +51,17 @@
         "private"
       ],
       "past": false
+    },
+    {
+      "id": "gig-1773363854252-xg86",
+      "day": "23",
+      "month": "Jan",
+      "year": "2026",
+      "venue": "Venue 2",
+      "location": "Lakeland, FL",
+      "time": "",
+      "tags": [],
+      "past": true
     }
   ],
   "videos": [
